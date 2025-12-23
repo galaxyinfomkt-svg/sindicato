@@ -1,7 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+
+// Hook para animações ao scroll
+function useScrollAnimation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
+// Componente de animação
+function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, isVisible } = useScrollAnimation();
+
+  return (
+    <div
+      ref={ref}
+      className={`animate-fade-up ${isVisible ? 'animate-visible' : ''} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function DireitosMedicoPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -34,96 +74,34 @@ export default function DireitosMedicoPage() {
   ];
 
   const direitosTrabalhistas = [
-    {
-      icon: "⏰",
-      title: "Jornada de Trabalho",
-      description: "Limite de horas, descanso entre jornadas e intervalos adequados para preservar sua saúde e qualidade do atendimento."
-    },
-    {
-      icon: "💰",
-      title: "Remuneração Justa",
-      description: "Piso salarial, adicional de insalubridade, horas extras, adicional noturno e todos os direitos remuneratórios."
-    },
-    {
-      icon: "🏖️",
-      title: "Férias e Descanso",
-      description: "Direito a férias remuneradas, descanso semanal, feriados e licenças previstas em lei."
-    },
-    {
-      icon: "🛡️",
-      title: "Segurança no Trabalho",
-      description: "EPIs adequados, ambiente seguro, proteção contra riscos ocupacionais e condições dignas de trabalho."
-    },
-    {
-      icon: "📋",
-      title: "Estabilidade",
-      description: "Proteção contra demissão arbitrária, garantias em casos de doença, gestação e acidentes de trabalho."
-    },
-    {
-      icon: "🎓",
-      title: "Capacitação",
-      description: "Direito a licença para estudos, participação em congressos e atualização profissional contínua."
-    }
+    { icon: "⏰", title: "Jornada de Trabalho", description: "Limite de horas, descanso entre jornadas e intervalos adequados para preservar sua saúde." },
+    { icon: "💰", title: "Remuneração Justa", description: "Piso salarial, adicional de insalubridade, horas extras, adicional noturno e direitos remuneratórios." },
+    { icon: "🏖️", title: "Férias e Descanso", description: "Direito a férias remuneradas, descanso semanal, feriados e licenças previstas em lei." },
+    { icon: "🛡️", title: "Segurança no Trabalho", description: "EPIs adequados, ambiente seguro, proteção contra riscos ocupacionais." },
+    { icon: "📋", title: "Estabilidade", description: "Proteção contra demissão arbitrária, garantias em casos de doença e acidentes." },
+    { icon: "🎓", title: "Capacitação", description: "Direito a licença para estudos, participação em congressos e atualização profissional." }
   ];
 
   const direitosPrevidenciarios = [
-    {
-      title: "Aposentadoria Especial",
-      description: "Médicos expostos a agentes nocivos podem ter direito à aposentadoria especial com tempo reduzido de contribuição."
-    },
-    {
-      title: "Auxílio-Doença",
-      description: "Benefício para afastamento temporário por motivo de saúde, garantindo renda durante o período de recuperação."
-    },
-    {
-      title: "Pensão por Morte",
-      description: "Proteção aos dependentes em caso de falecimento, garantindo sustento à família."
-    },
-    {
-      title: "Salário-Maternidade",
-      description: "Licença remunerada para médicas gestantes, com garantia de emprego após o retorno."
-    }
+    { title: "Aposentadoria Especial", description: "Médicos expostos a agentes nocivos podem ter direito à aposentadoria com tempo reduzido." },
+    { title: "Auxílio-Doença", description: "Benefício para afastamento temporário por motivo de saúde, garantindo renda durante recuperação." },
+    { title: "Pensão por Morte", description: "Proteção aos dependentes em caso de falecimento, garantindo sustento à família." },
+    { title: "Salário-Maternidade", description: "Licença remunerada para médicas gestantes, com garantia de emprego após retorno." }
   ];
 
   const direitosEticos = [
-    {
-      icon: "⚖️",
-      title: "Autonomia Profissional",
-      description: "Direito de exercer a medicina com liberdade e independência técnica, sem interferências indevidas."
-    },
-    {
-      icon: "🔒",
-      title: "Sigilo Médico",
-      description: "Proteção do sigilo profissional, fundamental para a relação médico-paciente."
-    },
-    {
-      icon: "✋",
-      title: "Recusa de Procedimentos",
-      description: "Direito de recusar procedimentos que contrariem sua consciência ou sejam contrários à ética médica."
-    },
-    {
-      icon: "📝",
-      title: "Defesa Profissional",
-      description: "Direito à ampla defesa em processos éticos e administrativos, com apoio do sindicato."
-    }
+    { icon: "⚖️", title: "Autonomia Profissional", description: "Exercer a medicina com liberdade e independência técnica." },
+    { icon: "🔒", title: "Sigilo Médico", description: "Proteção do sigilo profissional na relação médico-paciente." },
+    { icon: "✋", title: "Recusa de Procedimentos", description: "Recusar procedimentos contrários à sua consciência ou ética." },
+    { icon: "📝", title: "Defesa Profissional", description: "Direito à ampla defesa em processos éticos e administrativos." }
   ];
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://sinmevaco.com.br"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Direitos do Médico",
-        "item": "https://sinmevaco.com.br/direitos-do-medico"
-      }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://sinmevaco.com.br" },
+      { "@type": "ListItem", "position": 2, "name": "Direitos do Médico", "item": "https://sinmevaco.com.br/direitos-do-medico" }
     ]
   };
 
@@ -133,49 +111,46 @@ export default function DireitosMedicoPage() {
     "mainEntity": faqData.map(item => ({
       "@type": "Question",
       "name": item.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.answer
-      }
+      "acceptedAnswer": { "@type": "Answer", "text": item.answer }
     }))
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      {/* Hero Section */}
-      <section className="hero-gradient text-white pt-32 pb-20">
-        <div className="container">
-          <nav className="flex items-center gap-2 text-sm mb-8 opacity-80">
-            <Link href="/" className="hover:text-accent-orange transition-colors">Home</Link>
-            <span>/</span>
-            <span>Direitos do Médico</span>
-          </nav>
+      {/* ========== HERO SECTION ========== */}
+      <section className="hero-gradient min-h-[60vh] flex items-center relative pt-32 pb-20">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
 
-          <div className="max-w-4xl">
-            <span className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium mb-6">
-              Conheça e Defenda Seus Direitos
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Direitos do <span className="text-accent-orange">Médico</span>
+        <div className="container relative z-10">
+          <div className="max-w-4xl mx-auto text-center text-white">
+            <nav className="flex items-center justify-center gap-2 text-sm mb-8 animate-fade-up">
+              <Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link>
+              <span className="text-white/50">/</span>
+              <span className="text-white">Direitos do Médico</span>
+            </nav>
+
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5 mb-6 animate-fade-up">
+              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+              <span className="text-sm font-medium">Conheça e defenda seus direitos</span>
+            </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-[1.1] animate-fade-up" style={{ animationDelay: '100ms' }}>
+              Direitos do <span className="text-gradient">Médico</span>
             </h1>
-            <p className="text-xl md:text-2xl opacity-90 mb-8 leading-relaxed">
-              Informação é poder. Conheça todos os seus direitos como profissional da medicina
-              e saiba como o SINMEVACO pode ajudá-lo a defendê-los.
+
+            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: '200ms' }}>
+              Informação é poder. Conheça todos os seus direitos como profissional da medicina.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/juridico" className="btn btn-accent text-center">
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up" style={{ animationDelay: '300ms' }}>
+              <Link href="/juridico" className="btn btn-accent btn-xl">
                 Preciso de Apoio Jurídico
               </Link>
-              <Link href="/associe-se" className="btn btn-outline-white text-center">
+              <Link href="/associe-se" className="btn btn-outline-white btn-xl">
                 Quero Me Associar
               </Link>
             </div>
@@ -183,222 +158,209 @@ export default function DireitosMedicoPage() {
         </div>
       </section>
 
-      {/* Direitos Trabalhistas */}
-      <section className="section bg-white">
+      {/* ========== DIREITOS TRABALHISTAS ========== */}
+      <section className="section bg-white overflow-hidden">
         <div className="container">
-          <div className="text-center mb-16">
+          <AnimatedSection className="text-center mb-16">
             <span className="section-badge">Trabalhista</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-dark mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Direitos <span className="text-primary">Trabalhistas</span>
             </h2>
-            <p className="text-lg text-gray max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Conheça os principais direitos que protegem o médico nas relações de trabalho
             </p>
-          </div>
+          </AnimatedSection>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {direitosTrabalhistas.map((direito, index) => (
-              <div key={index} className="card hover:shadow-xl transition-all duration-300 group">
-                <div className="text-4xl mb-4">{direito.icon}</div>
-                <h3 className="text-xl font-bold text-dark mb-3 group-hover:text-primary transition-colors">
-                  {direito.title}
-                </h3>
-                <p className="text-gray leading-relaxed">
-                  {direito.description}
-                </p>
-              </div>
+              <AnimatedSection key={index} delay={index * 100}>
+                <div className="card h-full group hover:border-primary/30 border-2 border-transparent">
+                  <div className="icon-box mb-6 group-hover:scale-110 transition-transform">
+                    <span className="text-3xl">{direito.icon}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                    {direito.title}
+                  </h3>
+                  <p className="text-gray-600">{direito.description}</p>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Direitos Previdenciários */}
-      <section className="section bg-light">
+      {/* ========== DIREITOS PREVIDENCIÁRIOS ========== */}
+      <section className="section bg-light overflow-hidden">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <AnimatedSection>
               <span className="section-badge">Previdenciário</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-dark mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
                 Direitos <span className="text-primary">Previdenciários</span>
               </h2>
-              <p className="text-lg text-gray mb-8 leading-relaxed">
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                 Médicos têm direitos previdenciários específicos que garantem proteção
                 em diferentes momentos da carreira e da vida.
               </p>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {direitosPrevidenciarios.map((direito, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  <div key={index} className="flex gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                       {index + 1}
                     </div>
                     <div>
-                      <h3 className="font-bold text-dark mb-1">{direito.title}</h3>
-                      <p className="text-gray text-sm">{direito.description}</p>
+                      <h3 className="font-bold text-gray-900 mb-1">{direito.title}</h3>
+                      <p className="text-gray-600 text-sm">{direito.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </AnimatedSection>
 
-            <div className="bg-gradient-to-br from-primary to-dark-green rounded-3xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-6">Atenção Especial</h3>
-              <div className="space-y-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <h4 className="font-semibold mb-2">Reforma da Previdência</h4>
-                  <p className="text-sm opacity-90">
-                    As regras previdenciárias passaram por mudanças. Consulte o SINMEVACO
-                    para entender como elas afetam sua situação específica.
-                  </p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <h4 className="font-semibold mb-2">Tempo de Contribuição</h4>
-                  <p className="text-sm opacity-90">
-                    A contagem do tempo de contribuição e as regras de transição
-                    variam conforme cada caso.
-                  </p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <h4 className="font-semibold mb-2">Orientação Especializada</h4>
-                  <p className="text-sm opacity-90">
-                    Nossa equipe jurídica pode analisar seu caso e orientar sobre
-                    a melhor estratégia previdenciária.
-                  </p>
+            <AnimatedSection delay={200}>
+              <div className="bg-gradient-to-br from-primary-dark via-primary to-primary-light rounded-3xl p-8 text-white">
+                <h3 className="text-2xl font-bold mb-6">Atenção Especial</h3>
+                <div className="space-y-4">
+                  {[
+                    { title: "Reforma da Previdência", desc: "As regras mudaram. Consulte o SINMEVACO sobre sua situação." },
+                    { title: "Tempo de Contribuição", desc: "A contagem varia conforme cada caso específico." },
+                    { title: "Orientação Especializada", desc: "Nossa equipe pode analisar seu caso e orientar a melhor estratégia." }
+                  ].map((item, i) => (
+                    <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                      <h4 className="font-semibold mb-2">{item.title}</h4>
+                      <p className="text-sm text-white/90">{item.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
-      {/* Direitos Éticos e Profissionais */}
-      <section className="section bg-white">
+      {/* ========== DIREITOS ÉTICOS ========== */}
+      <section className="section bg-white overflow-hidden">
         <div className="container">
-          <div className="text-center mb-16">
+          <AnimatedSection className="text-center mb-16">
             <span className="section-badge">Ético-Profissional</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-dark mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Direitos <span className="text-primary">Éticos e Profissionais</span>
             </h2>
-            <p className="text-lg text-gray max-w-2xl mx-auto">
-              Princípios fundamentais que garantem o exercício digno e autônomo da medicina
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Princípios fundamentais para o exercício digno e autônomo da medicina
             </p>
-          </div>
+          </AnimatedSection>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {direitosEticos.map((direito, index) => (
-              <div key={index} className="text-center p-6 rounded-2xl border-2 border-light hover:border-primary transition-all duration-300 group">
-                <div className="w-16 h-16 bg-light rounded-full flex items-center justify-center mx-auto mb-4 text-3xl group-hover:bg-primary group-hover:text-white transition-all">
-                  {direito.icon}
+              <AnimatedSection key={index} delay={index * 100}>
+                <div className="stat-card h-full group text-center">
+                  <span className="text-4xl mb-4 block group-hover:scale-110 transition-transform">{direito.icon}</span>
+                  <h3 className="text-lg font-bold mb-2">{direito.title}</h3>
+                  <p className="text-white/80 text-sm">{direito.description}</p>
                 </div>
-                <h3 className="font-bold text-dark mb-2">{direito.title}</h3>
-                <p className="text-gray text-sm">{direito.description}</p>
-              </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Condições de Trabalho */}
-      <section className="section bg-primary text-white">
-        <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      {/* ========== CONDIÇÕES DE TRABALHO ========== */}
+      <section className="section bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white overflow-hidden relative">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-40 h-40 border-4 border-white rounded-full" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 border-4 border-white rounded-full" />
+        </div>
+
+        <div className="container relative z-10">
+          <AnimatedSection className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Condições Dignas de Trabalho
             </h2>
-            <p className="text-xl opacity-90 mb-12 leading-relaxed">
+            <p className="text-xl text-white/90 mb-12 leading-relaxed">
               Todo médico tem direito a exercer sua profissão em condições que
-              garantam sua saúde, segurança e a qualidade do atendimento aos pacientes.
+              garantam sua saúde, segurança e a qualidade do atendimento.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-4xl mb-4">🏥</div>
-                <h3 className="font-bold text-xl mb-2">Infraestrutura</h3>
-                <p className="opacity-90 text-sm">
-                  Instalações adequadas, equipamentos funcionais e materiais
-                  necessários para o exercício da medicina.
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-4xl mb-4">👥</div>
-                <h3 className="font-bold text-xl mb-2">Equipe de Apoio</h3>
-                <p className="opacity-90 text-sm">
-                  Número adequado de profissionais de apoio para garantir
-                  atendimento de qualidade.
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-4xl mb-4">🧘</div>
-                <h3 className="font-bold text-xl mb-2">Saúde Mental</h3>
-                <p className="opacity-90 text-sm">
-                  Ambiente de trabalho que respeite a saúde física e mental
-                  do profissional.
-                </p>
-              </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { icon: "🏥", title: "Infraestrutura", desc: "Instalações adequadas e equipamentos funcionais" },
+                { icon: "👥", title: "Equipe de Apoio", desc: "Número adequado de profissionais de apoio" },
+                { icon: "🧘", title: "Saúde Mental", desc: "Ambiente que respeite a saúde física e mental" }
+              ].map((item, i) => (
+                <AnimatedSection key={i} delay={i * 100}>
+                  <div className="benefit-card h-full">
+                    <span className="text-5xl mb-4 block">{item.icon}</span>
+                    <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                    <p className="text-white/80">{item.desc}</p>
+                  </div>
+                </AnimatedSection>
+              ))}
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="section bg-light">
+      {/* ========== FAQ ========== */}
+      <section className="section bg-light overflow-hidden">
         <div className="container">
-          <div className="text-center mb-16">
+          <AnimatedSection className="text-center mb-16">
             <span className="section-badge">Dúvidas Frequentes</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-dark mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Perguntas <span className="text-primary">Frequentes</span>
             </h2>
-            <p className="text-lg text-gray max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Esclarecemos as principais dúvidas sobre direitos médicos
             </p>
-          </div>
+          </AnimatedSection>
 
           <div className="max-w-3xl mx-auto">
-            {faqData.map((faq, index) => (
-              <div key={index} className="mb-4">
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full bg-white rounded-xl p-5 flex items-center justify-between text-left shadow-sm hover:shadow-md transition-all"
-                >
-                  <span className="font-semibold text-dark pr-4">{faq.question}</span>
-                  <span className={`text-primary text-2xl transition-transform duration-300 ${openFaq === index ? 'rotate-45' : ''}`}>
-                    +
-                  </span>
-                </button>
-                {openFaq === index && (
-                  <div className="bg-white border-t border-light rounded-b-xl p-5 mt-[-8px]">
-                    <p className="text-gray leading-relaxed">{faq.answer}</p>
+            {faqData.map((faq, i) => (
+              <AnimatedSection key={i} delay={i * 50}>
+                <div className={`faq-item ${openFaq === i ? 'active' : ''}`}>
+                  <div className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                    <h3>{faq.question}</h3>
+                    <span className="faq-toggle">+</span>
                   </div>
-                )}
-              </div>
+                  <div className="faq-answer">
+                    <div className="faq-answer-inner">
+                      <p>{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section bg-gradient-to-br from-accent-orange to-orange-600 text-white">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Seus Direitos Estão Sendo Respeitados?
-          </h2>
-          <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Se você está enfrentando qualquer violação dos seus direitos como médico,
-            o SINMEVACO está aqui para ajudar. Nossa equipe jurídica especializada
-            pode orientá-lo.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="https://wa.me/5531997178316?text=Olá! Preciso de orientação sobre meus direitos como médico."
-              target="_blank"
-              className="btn bg-white text-accent-orange hover:bg-light"
-            >
-              Falar com Especialista
-            </Link>
-            <Link href="/juridico" className="btn btn-outline-white">
-              Conhecer Apoio Jurídico
-            </Link>
-          </div>
+      {/* ========== CTA FINAL ========== */}
+      <section className="cta-section section text-white overflow-hidden">
+        <div className="container relative z-10">
+          <AnimatedSection className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              Seus Direitos Estão Sendo Respeitados?
+            </h2>
+            <p className="text-xl text-white/90 mb-8 leading-relaxed">
+              Se você está enfrentando qualquer violação dos seus direitos como médico,
+              o SINMEVACO está aqui para ajudar.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="https://wa.me/5531997178316?text=Olá! Preciso de orientação sobre meus direitos como médico."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-accent btn-xl"
+              >
+                Falar com Especialista
+              </a>
+              <Link href="/juridico" className="btn btn-outline-white btn-xl">
+                Conhecer Apoio Jurídico
+              </Link>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
     </>

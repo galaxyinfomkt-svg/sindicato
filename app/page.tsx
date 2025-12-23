@@ -1,601 +1,613 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// FAQ Data para a Home
-const faqData = [
-  {
-    question: "O que é o SINMEVACO?",
-    answer: "O SINMEVACO é o Sindicato dos Médicos do Vale do Aço, atuando há mais de 32 anos na defesa dos direitos dos médicos. Representamos os profissionais de Ipatinga, Timóteo, Coronel Fabriciano e toda a região do Vale do Aço. Oferecemos apoio jurídico especializado, benefícios exclusivos e representação sindical para fortalecer a categoria médica."
-  },
-  {
-    question: "Quais são os benefícios de se associar ao SINMEVACO?",
-    answer: "Médicos associados ao SINMEVACO têm acesso a apoio jurídico especializado nas áreas trabalhista, administrativa e sindical. Também oferecemos descontos exclusivos em educação (até 45% em escolas), saúde, seguros e economia de até 20% na conta de energia. Além disso, você participa do programa de indicação que garante 1 mês grátis para você e para o colega indicado."
-  },
-  {
-    question: "Como funciona o apoio jurídico para médicos sindicalizados?",
-    answer: "O SINMEVACO oferece assessoria jurídica completa através de parcerias com escritórios especializados. Nossa atuação é preventiva e corretiva, garantindo defesa em questões trabalhistas, administrativas e sindicais. Atendemos médicos sindicalizados em todas as fases da carreira profissional."
-  },
-  {
-    question: "Em quais cidades o SINMEVACO atua?",
-    answer: "O SINMEVACO atua em todo o Vale do Aço, com presença consolidada em Ipatinga, Timóteo e Coronel Fabriciano. Representamos médicos de toda a região, oferecendo apoio e benefícios para fortalecer a categoria médica local."
-  },
-  {
-    question: "Como funciona o programa de indicação?",
-    answer: "No programa de indicação do SINMEVACO, quando você indica um colega médico que se associa, ambos ganham 1 mês de mensalidade grátis. É simples: você indica, o colega se associa e os dois recebem o benefício. Quanto mais você indica, mais meses grátis você acumula."
-  },
-  {
-    question: "Como posso me associar ao SINMEVACO?",
-    answer: "Para se associar ao SINMEVACO, você pode preencher o formulário de filiação no nosso site ou entrar em contato pelo WhatsApp (31) 99717-8316. Nossa equipe entrará em contato para finalizar o processo de associação. É rápido e você já começa a aproveitar os benefícios imediatamente."
-  },
-  {
-    question: "O SINMEVACO atende médicos de todas as especialidades?",
-    answer: "Sim, o SINMEVACO representa médicos de todas as especialidades que atuam no Vale do Aço. Independente da sua área de atuação, você pode se associar e contar com nossa representação. Defendemos os direitos de todos os profissionais médicos da região."
-  },
-  {
-    question: "Quanto custa a mensalidade do sindicato?",
-    answer: "Para informações sobre valores de mensalidade e condições de pagamento, entre em contato conosco pelo WhatsApp (31) 99717-8316 ou preencha o formulário no site. Nossa equipe fornecerá todos os detalhes sobre investimento e formas de pagamento. Lembre-se que você pode ganhar meses grátis indicando colegas."
-  }
-];
+// Hook para animações ao scroll
+function useScrollAnimation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-// Schema FAQPage para a Home
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": faqData.map(item => ({
-    "@type": "Question",
-    "name": item.question,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": item.answer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
     }
-  }))
-};
 
-// Componente FAQ Item
-function FAQItem({ question, answer, isOpen, onClick }: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onClick: () => void;
-}) {
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
+// Componente de animação
+function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, isVisible } = useScrollAnimation();
+
   return (
-    <div className={`faq-item ${isOpen ? 'active' : ''}`}>
-      <div className="faq-question" onClick={onClick}>
-        <h3>{question}</h3>
-        <span className="faq-toggle">+</span>
-      </div>
-      <div className="faq-answer">
-        <div className="faq-answer-inner">
-          <p>{answer}</p>
-        </div>
-      </div>
+    <div
+      ref={ref}
+      className={`animate-fade-up ${isVisible ? 'animate-visible' : ''} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
     </div>
   );
 }
 
-export default function Home() {
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
+export default function HomePage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [currentBenefit, setCurrentBenefit] = useState(0);
 
-  // Auto-rotate slider
+  // Dados do FAQ
+  const faqData = [
+    {
+      question: "Como faço para me associar ao SINMEVACO?",
+      answer: "O processo é simples e rápido! Basta clicar no botão 'Associe-se', preencher o formulário com seus dados e nossa equipe entrará em contato para finalizar sua filiação."
+    },
+    {
+      question: "Quais são os benefícios de ser associado?",
+      answer: "Associados têm acesso a apoio jurídico especializado, descontos de até 45% em educação, economia de até 20% na conta de energia, programa de indicação com 1 mês grátis, e muito mais!"
+    },
+    {
+      question: "O apoio jurídico é gratuito para associados?",
+      answer: "Sim! Oferecemos orientação jurídica gratuita nas áreas trabalhista, administrativa e sindical. Para ações judiciais, temos condições especiais com escritórios parceiros."
+    },
+    {
+      question: "O SINMEVACO atua em quais cidades?",
+      answer: "Atuamos em toda a região do Vale do Aço, incluindo Ipatinga, Timóteo, Coronel Fabriciano e municípios vizinhos."
+    },
+    {
+      question: "Como funciona o Programa de Indicação?",
+      answer: "Indique um colega médico para se associar e ganhe 1 mês de anuidade grátis por indicação. Não há limite de indicações!"
+    },
+    {
+      question: "Posso cancelar minha filiação a qualquer momento?",
+      answer: "Sim, você pode solicitar o cancelamento quando desejar. Basta entrar em contato conosco pelo WhatsApp ou e-mail."
+    }
+  ];
+
+  // Benefícios para slider
+  const beneficios = [
+    { icon: "🎓", titulo: "Educação", desconto: "até 45%", desc: "Graduação e Pós" },
+    { icon: "⚡", titulo: "Energia", desconto: "até 20%", desc: "Na conta de luz" },
+    { icon: "⚖️", titulo: "Jurídico", desconto: "Gratuito", desc: "Orientação especializada" },
+    { icon: "🛡️", titulo: "Seguros", desconto: "até 30%", desc: "Vida e auto" },
+  ];
+
+  // Auto-rotate benefícios
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
-    }, 5000);
+      setCurrentBenefit((prev) => (prev + 1) % beneficios.length);
+    }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [beneficios.length]);
+
+  // Schema FAQ
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqData.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  };
 
   return (
     <>
-      {/* Schema FAQPage */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      {/* ========== HERO SECTION ========== */}
-      <section className="hero" style={{ paddingTop: '200px', paddingBottom: '120px' }}>
-        <div className="hero-content container" style={{ textAlign: 'center' }}>
-          {/* Badge de destaque */}
-          <div className="badge badge-white" style={{ marginBottom: '30px', padding: '15px 30px', fontSize: '16px' }}>
-            🎁 Indique um colega e ganhe 1 mês grátis!
-          </div>
+      {/* ============ HERO SECTION ============ */}
+      <section className="hero-gradient min-h-screen flex items-center relative pt-24 pb-16 lg:pt-32 lg:pb-24">
+        {/* Decorative Elements */}
+        <div className="absolute top-20 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
 
-          <h1 style={{ color: 'white', marginBottom: '25px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Defendendo os direitos dos médicos do Vale do Aço há mais de 32 anos
-          </h1>
-
-          <p style={{
-            color: 'rgba(255, 255, 255, 0.95)',
-            fontSize: '20px',
-            maxWidth: '850px',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginBottom: '45px',
-            lineHeight: '1.7'
-          }}>
-            Representatividade, apoio jurídico especializado e benefícios exclusivos para médicos sindicalizados em Ipatinga, Timóteo, Coronel Fabriciano e região.
-          </p>
-
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/associe-se" className="btn btn-white btn-lg">
-              🟢 Associe-se
-            </Link>
-            <Link href="/contato" className="btn btn-secondary btn-lg">
-              ⚪ Fale com o Sindicato
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== SOBRE O SINDICATO ========== */}
-      <section className="section" style={{ background: 'var(--white)' }}>
-        <div className="container">
-          <h2 className="section-title">Sobre o SINMEVACO</h2>
-          <p className="section-subtitle">
-            Uma trajetória de mais de três décadas dedicada à defesa da categoria médica no Vale do Aço
-          </p>
-
-          <div className="grid-3">
-            <div className="card card-gray" style={{ textAlign: 'center', border: '2px solid transparent' }}>
-              <span className="icon-lg">🏛️</span>
-              <h3 style={{ marginBottom: '15px' }}>Mais de 32 anos de atuação</h3>
-              <p>Desde a nossa fundação, trabalhamos incansavelmente pela valorização e defesa dos direitos dos médicos da região.</p>
-            </div>
-
-            <div className="card card-gray" style={{ textAlign: 'center', border: '2px solid transparent' }}>
-              <span className="icon-lg">⚕️</span>
-              <h3 style={{ marginBottom: '15px' }}>Defesa da categoria médica</h3>
-              <p>Representamos os interesses dos médicos em todas as esferas, garantindo condições dignas de trabalho e remuneração justa.</p>
-            </div>
-
-            <div className="card card-gray" style={{ textAlign: 'center', border: '2px solid transparent' }}>
-              <span className="icon-lg">🤝</span>
-              <h3 style={{ marginBottom: '15px' }}>Atuação ética e transparente</h3>
-              <p>Nosso compromisso é com a verdade, a transparência e o bem-estar de todos os médicos sindicalizados.</p>
-            </div>
-          </div>
-
-          {/* Presidente Info */}
-          <div className="card card-green" style={{ textAlign: 'center', marginTop: '40px', padding: '40px' }}>
-            <h4 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '10px', opacity: '0.9', color: 'white' }}>
-              Presidente do SINMEVACO
-            </h4>
-            <h3 style={{ fontSize: '28px', fontWeight: '700', color: 'white' }}>
-              Dr. Carlos Henrique Quintão Valeriano
-            </h3>
-          </div>
-
-          {/* CTA Box - Programa de Indicação */}
-          <div style={{
-            background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c61 100%)',
-            padding: '40px 50px',
-            borderRadius: '20px',
-            marginTop: '50px',
-            boxShadow: '0 10px 40px rgba(255, 107, 53, 0.3)'
-          }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto 1fr auto',
-              gap: '30px',
-              alignItems: 'center',
-              flexWrap: 'wrap'
-            }} className="cta-box-grid">
-              <span style={{ fontSize: '60px' }}>🎁</span>
-              <div>
-                <h4 style={{ color: 'white', fontSize: '24px', fontWeight: '700', marginBottom: '8px', fontFamily: 'var(--font-poppins)' }}>
-                  Indique um colega e ganhe 1 mês grátis!
-                </h4>
-                <p style={{ color: 'rgba(255, 255, 255, 0.95)', fontSize: '16px' }}>
-                  Você e seu colega ganham benefícios exclusivos
-                </p>
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Content */}
+            <div className="text-white">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5 mb-6 animate-fade-up">
+                <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                <span className="text-sm font-medium">Há mais de 32 anos defendendo médicos</span>
               </div>
-              <Link href="/associe-se" className="btn btn-white">
-                👉 Indicar Agora
-              </Link>
-            </div>
-          </div>
 
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <Link href="/quem-somos" className="btn btn-primary">
-              Conheça Nossa História
-            </Link>
-          </div>
-        </div>
-      </section>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-[1.1] animate-fade-up" style={{ animationDelay: '100ms' }}>
+                Sindicato dos Médicos do
+                <span className="text-gradient block mt-2">Vale do Aço</span>
+              </h1>
 
-      {/* ========== APOIO JURÍDICO ========== */}
-      <section className="section" style={{ background: 'linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%)' }}>
-        <div className="container">
-          <div className="grid-2" style={{ alignItems: 'center' }}>
-            <div>
-              <h2 style={{ marginBottom: '25px' }}>Apoio Jurídico Completo ao Médico</h2>
-              <p style={{ fontSize: '18px', marginBottom: '35px', lineHeight: '1.7' }}>
-                O SINMEVACO oferece assessoria jurídica especializada através de parcerias com escritórios de advocacia renomados. Nossa atuação é preventiva e corretiva, garantindo a defesa dos seus direitos em todas as esferas.
+              <p className="text-lg md:text-xl text-white/90 mb-8 leading-relaxed max-w-xl animate-fade-up" style={{ animationDelay: '200ms' }}>
+                Defendendo seus direitos, fortalecendo sua carreira e oferecendo benefícios exclusivos para médicos de Ipatinga, Timóteo e Coronel Fabriciano.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
-                <div className="juridico-card">
-                  <span style={{ fontSize: '36px' }}>📋</span>
-                  <h4>Trabalhista</h4>
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
+                <Link href="/associe-se" className="btn btn-accent btn-lg">
+                  <span>Associe-se Agora</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link href="/beneficios" className="btn btn-outline-white btn-lg">
+                  Ver Benefícios
+                </Link>
+              </div>
+
+              {/* Stats Mini */}
+              <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20 animate-fade-up" style={{ animationDelay: '400ms' }}>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold">32+</div>
+                  <div className="text-white/70 text-sm">Anos de história</div>
                 </div>
-                <div className="juridico-card">
-                  <span style={{ fontSize: '36px' }}>🏢</span>
-                  <h4>Administrativo</h4>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold">500+</div>
+                  <div className="text-white/70 text-sm">Médicos atendidos</div>
                 </div>
-                <div className="juridico-card">
-                  <span style={{ fontSize: '36px' }}>⚖️</span>
-                  <h4>Sindical</h4>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold">100%</div>
+                  <div className="text-white/70 text-sm">Compromisso</div>
                 </div>
+              </div>
+            </div>
+
+            {/* Image Hero */}
+            <div className="relative hidden lg:block animate-fade-up" style={{ animationDelay: '300ms' }}>
+              <div className="relative">
+                {/* Main Image */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18f4c8e921e65a0a1c.jpg"
+                    alt="Eventos SINMEVACO"
+                    width={600}
+                    height={500}
+                    className="w-full h-auto object-cover"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                </div>
+
+                {/* Floating Card */}
+                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-xl animate-float">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center">
+                      <span className="text-2xl">⚖️</span>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-primary">Gratuito</div>
+                      <div className="text-gray-600 text-sm">Apoio Jurídico</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <div className="absolute -top-4 -right-4 bg-accent text-white px-4 py-2 rounded-full font-bold shadow-lg animate-pulse">
+                  1 mês grátis na indicação!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ============ SOBRE O SINMEVACO ============ */}
+      <section className="section bg-white overflow-hidden">
+        <div className="container">
+          <AnimatedSection className="text-center mb-16">
+            <span className="section-badge">Quem Somos</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              Conheça o <span className="text-primary">SINMEVACO</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Há mais de 32 anos trabalhando pela valorização e defesa dos médicos do Vale do Aço
+            </p>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "🏛️",
+                title: "Nossa História",
+                desc: "Fundado há mais de três décadas, o SINMEVACO nasceu da necessidade de unir os médicos do Vale do Aço em defesa de seus direitos.",
+                delay: 0
+              },
+              {
+                icon: "🛡️",
+                title: "Defesa da Classe",
+                desc: "Atuamos incansavelmente na defesa dos direitos trabalhistas, éticos e profissionais de todos os médicos da região.",
+                delay: 100
+              },
+              {
+                icon: "⚖️",
+                title: "Ética e Transparência",
+                desc: "Nossa gestão é pautada pela ética, transparência e pelo compromisso com os interesses de cada associado.",
+                delay: 200
+              }
+            ].map((item, i) => (
+              <AnimatedSection key={i} delay={item.delay}>
+                <div className="card group h-full text-center">
+                  <div className="icon-box mx-auto">
+                    <span className="text-3xl">{item.icon}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600">{item.desc}</p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PRESIDENTE ============ */}
+      <section className="section bg-light overflow-hidden">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <AnimatedSection className="order-2 lg:order-1">
+              <span className="section-badge">Liderança</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Dr. Carlos Henrique<br />
+                <span className="text-primary">Quintão Valeriano</span>
+              </h2>
+              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                Presidente do SINMEVACO, o Dr. Carlos Henrique lidera nossa instituição com
+                dedicação e compromisso inabaláveis com a classe médica do Vale do Aço.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {[
+                  "Médico com vasta experiência na região",
+                  "Defensor incansável dos direitos da classe",
+                  "Liderança ativa nas negociações coletivas",
+                  "Comprometido com cada associado"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <blockquote className="bg-white rounded-2xl p-6 border-l-4 border-primary shadow-sm">
+                <p className="text-gray-700 italic mb-3">
+                  &ldquo;Nossa missão é garantir que cada médico do Vale do Aço tenha seus direitos
+                  respeitados e sua carreira valorizada.&rdquo;
+                </p>
+                <cite className="text-primary font-semibold not-italic">
+                  — Dr. Carlos Henrique Quintão Valeriano
+                </cite>
+              </blockquote>
+            </AnimatedSection>
+
+            <AnimatedSection delay={200} className="order-1 lg:order-2">
+              <div className="relative">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f1896e3f2127ce231c4.jpg"
+                    alt="Dr. Carlos Henrique Quintão Valeriano - Presidente do SINMEVACO"
+                    width={600}
+                    height={700}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+
+                {/* Badge Presidente */}
+                <div className="absolute -bottom-6 left-6 right-6 bg-gradient-to-r from-primary to-primary-light text-white rounded-2xl p-5 shadow-xl">
+                  <div className="text-center">
+                    <div className="font-bold text-lg">Presidente do SINMEVACO</div>
+                    <div className="text-white/80 text-sm">Gestão comprometida com você</div>
+                  </div>
+                </div>
+
+                {/* Decorative */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-xl" />
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/20 rounded-full blur-xl" />
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PROGRAMA DE INDICAÇÃO ============ */}
+      <section className="section bg-gradient-to-br from-accent to-orange-600 text-white overflow-hidden relative">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-40 h-40 border-4 border-white rounded-full" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 border-4 border-white rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border-4 border-white rounded-full" />
+        </div>
+
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <AnimatedSection>
+              <span className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold mb-6">
+                🎁 Novidade Exclusiva
+              </span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+                Programa de Indicação
+              </h2>
+              <p className="text-xl text-white/90 mb-8 leading-relaxed">
+                Indique colegas médicos para se associarem e ganhe <strong>1 mês de anuidade grátis</strong> por
+                cada indicação bem-sucedida. Sem limites!
+              </p>
+
+              <div className="grid sm:grid-cols-3 gap-4 mb-8">
+                {[
+                  { num: "1", text: "Indique um colega" },
+                  { num: "2", text: "Ele se associa" },
+                  { num: "3", text: "Você ganha 1 mês" }
+                ].map((step, i) => (
+                  <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                    <div className="w-10 h-10 bg-white text-accent rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-2">
+                      {step.num}
+                    </div>
+                    <div className="text-sm font-medium">{step.text}</div>
+                  </div>
+                ))}
+              </div>
+
+              <Link href="/associe-se" className="btn btn-white btn-lg">
+                <span>Quero Participar</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </AnimatedSection>
+
+            <AnimatedSection delay={200}>
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
+                <div className="text-center mb-6">
+                  <div className="text-6xl font-extrabold mb-2">∞</div>
+                  <div className="text-xl font-semibold">Indicações Ilimitadas</div>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    "1 indicação = 1 mês grátis",
+                    "5 indicações = 5 meses grátis",
+                    "12 indicações = 1 ano grátis!"
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 bg-white/10 rounded-xl p-4">
+                      <div className="w-8 h-8 bg-white text-accent rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="font-medium">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ APOIO JURÍDICO ============ */}
+      <section className="section bg-white overflow-hidden">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <AnimatedSection>
+              <div className="relative">
+                <div className="rounded-3xl overflow-hidden shadow-2xl">
+                  <Image
+                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18ca7298052f138331.jpg"
+                    alt="Apoio Jurídico SINMEVACO"
+                    width={600}
+                    height={500}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+
+                {/* Stats Overlay */}
+                <div className="absolute -bottom-6 -right-6 bg-primary text-white rounded-2xl p-6 shadow-xl">
+                  <div className="text-4xl font-bold mb-1">95%</div>
+                  <div className="text-sm text-white/80">Taxa de sucesso</div>
+                </div>
+              </div>
+            </AnimatedSection>
+
+            <AnimatedSection delay={200}>
+              <span className="section-badge">Apoio Jurídico</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Assessoria Jurídica <span className="text-primary">Especializada</span>
+              </h2>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                Conte com apoio jurídico especializado e gratuito para associados.
+                Nossa equipe está preparada para defender seus direitos.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                {[
+                  { icon: "⚖️", title: "Trabalhista", desc: "Defesa em ações e contratos" },
+                  { icon: "🏛️", title: "Administrativo", desc: "Processos e concursos" },
+                  { icon: "🤝", title: "Sindical", desc: "Negociações coletivas" },
+                  { icon: "📋", title: "Ético", desc: "Defesa junto ao CRM" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 bg-light rounded-xl hover:bg-primary/5 transition-colors">
+                    <span className="text-2xl">{item.icon}</span>
+                    <div>
+                      <div className="font-semibold text-gray-900">{item.title}</div>
+                      <div className="text-sm text-gray-600">{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <Link href="/juridico" className="btn btn-primary">
-                👉 Solicitar Apoio Jurídico
+                Saiba Mais
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ BENEFÍCIOS ============ */}
+      <section className="section bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white overflow-hidden">
+        <div className="container">
+          <AnimatedSection className="text-center mb-16">
+            <span className="section-badge section-badge-light">Vantagens Exclusivas</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Benefícios para <span className="text-gradient">Associados</span>
+            </h2>
+            <p className="text-lg text-white/90 max-w-2xl mx-auto">
+              Aproveite descontos exclusivos e vantagens que fazem diferença no seu dia a dia
+            </p>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {beneficios.map((b, i) => (
+              <AnimatedSection key={i} delay={i * 100}>
+                <div className={`benefit-card h-full ${currentBenefit === i ? 'ring-2 ring-white scale-105' : ''}`}>
+                  <span className="text-5xl mb-4 block">{b.icon}</span>
+                  <h3 className="text-xl font-bold mb-2">{b.titulo}</h3>
+                  <div className="text-3xl font-extrabold text-accent mb-2">{b.desconto}</div>
+                  <p className="text-white/80">{b.desc}</p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+
+          <AnimatedSection delay={400} className="text-center mt-12">
+            <Link href="/beneficios" className="btn btn-white btn-lg">
+              Ver Todos os Benefícios
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* ============ REGIÃO DE ATUAÇÃO ============ */}
+      <section className="section bg-light overflow-hidden">
+        <div className="container">
+          <AnimatedSection className="text-center mb-16">
+            <span className="section-badge">Cobertura Regional</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Onde <span className="text-primary">Atuamos</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Representamos médicos de toda a região do Vale do Aço
+            </p>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { cidade: "Ipatinga", icon: "🏙️", desc: "Sede principal do SINMEVACO" },
+              { cidade: "Timóteo", icon: "🌆", desc: "Atendimento completo" },
+              { cidade: "Coronel Fabriciano", icon: "🏛️", desc: "Suporte integral" }
+            ].map((local, i) => (
+              <AnimatedSection key={i} delay={i * 100}>
+                <div className="stat-card h-full group cursor-pointer">
+                  <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform">{local.icon}</span>
+                  <h3 className="text-2xl font-bold mb-2">{local.cidade}</h3>
+                  <p className="text-white/80">{local.desc}</p>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="section bg-white overflow-hidden">
+        <div className="container">
+          <AnimatedSection className="text-center mb-16">
+            <span className="section-badge">Dúvidas Frequentes</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Perguntas <span className="text-primary">Frequentes</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Tire suas principais dúvidas sobre o SINMEVACO
+            </p>
+          </AnimatedSection>
+
+          <div className="max-w-3xl mx-auto">
+            {faqData.map((faq, i) => (
+              <AnimatedSection key={i} delay={i * 50}>
+                <div className={`faq-item ${openFaq === i ? 'active' : ''}`}>
+                  <div
+                    className="faq-question"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
+                    <h3>{faq.question}</h3>
+                    <span className="faq-toggle">+</span>
+                  </div>
+                  <div className="faq-answer">
+                    <div className="faq-answer-inner">
+                      <p>{faq.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CTA FINAL ============ */}
+      <section className="cta-section section text-white overflow-hidden">
+        <div className="container relative z-10">
+          <AnimatedSection className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              Faça Parte do SINMEVACO
+            </h2>
+            <p className="text-xl text-white/90 mb-8 leading-relaxed">
+              Junte-se a centenas de médicos que já contam com nosso apoio jurídico,
+              benefícios exclusivos e representação forte no Vale do Aço.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/associe-se" className="btn btn-accent btn-xl">
+                Associe-se Agora
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              <Link
+                href="https://wa.me/5531997178316?text=Olá! Quero saber mais sobre o SINMEVACO."
+                target="_blank"
+                className="btn btn-outline-white btn-xl"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Falar no WhatsApp
               </Link>
             </div>
-
-            <div style={{
-              background: 'linear-gradient(135deg, var(--primary-green), var(--light-green))',
-              borderRadius: '20px',
-              padding: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '400px',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <span style={{ fontSize: '150px', opacity: '0.2', color: 'white' }} className="float">⚖️</span>
-            </div>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
-
-      {/* ========== PROGRAMA DE INDICAÇÃO ========== */}
-      <section className="section" style={{
-        background: 'linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <span className="icon-xl bounce">🎁🎁</span>
-            <h2 className="section-title section-title-white">Indique um Colega e Ganhe!</h2>
-            <p className="section-subtitle section-subtitle-white">
-              Fortaleça a categoria médica e ganhe benefícios exclusivos
-            </p>
-          </div>
-
-          {/* Cards de passos */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '30px',
-            marginBottom: '60px'
-          }}>
-            <div className="indicacao-card">
-              <div className="indicacao-step">1</div>
-              <span className="icon-lg">🤝</span>
-              <h3>Indique um Colega</h3>
-              <p>Convide médicos da região para fazer parte do SINMEVACO</p>
-            </div>
-
-            <div className="indicacao-card">
-              <div className="indicacao-step">2</div>
-              <span className="icon-lg">✅</span>
-              <h3>Colega se Associa</h3>
-              <p>Seu colega realiza a filiação ao sindicato</p>
-            </div>
-
-            <div className="indicacao-card highlight">
-              <div className="indicacao-step">3</div>
-              <span className="icon-lg">🎁</span>
-              <h3>Ambos Ganham!</h3>
-              <p><strong style={{ color: 'var(--accent-orange)', fontSize: '18px' }}>1 MÊS GRÁTIS</strong> para você e para o novo sócio</p>
-            </div>
-          </div>
-
-          {/* Benefícios */}
-          <div className="grid-3" style={{ marginBottom: '50px' }}>
-            <div className="benefit-box">
-              <span className="icon-lg">🎯</span>
-              <h4 style={{ color: 'white', fontSize: '22px', fontWeight: '700', marginBottom: '12px' }}>Você Ganha</h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>1 mês de mensalidade grátis por cada indicação efetivada</p>
-            </div>
-
-            <div className="benefit-box">
-              <span className="icon-lg">🌟</span>
-              <h4 style={{ color: 'white', fontSize: '22px', fontWeight: '700', marginBottom: '12px' }}>Novo Sócio Ganha</h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>1 mês grátis para começar a aproveitar os benefícios</p>
-            </div>
-
-            <div className="benefit-box">
-              <span className="icon-lg">💪</span>
-              <h4 style={{ color: 'white', fontSize: '22px', fontWeight: '700', marginBottom: '12px' }}>Categoria Fortalecida</h4>
-              <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Mais médicos unidos significa mais força na representação</p>
-            </div>
-          </div>
-
-          {/* CTAs */}
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/associe-se" className="btn btn-white btn-lg">
-              👉 Quero Indicar
-            </Link>
-            <Link href="/beneficios" className="btn btn-secondary btn-lg">
-              Ver Todos os Benefícios
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== DESTAQUES RÁPIDOS ========== */}
-      <section className="section" style={{ background: 'var(--white)' }}>
-        <div className="container">
-          <h2 className="section-title">Por que se associar ao SINMEVACO?</h2>
-          <p className="section-subtitle">
-            Benefícios exclusivos que fazem a diferença na sua carreira médica
-          </p>
-
-          <div className="grid-3">
-            <Link href="/juridico" className="card card-gray" style={{ textAlign: 'center', cursor: 'pointer', border: '2px solid transparent', position: 'relative', overflow: 'hidden' }}>
-              <span className="icon-xl">⚖️</span>
-              <h3>Apoio Jurídico</h3>
-              <p>Assessoria especializada em direito médico, trabalhista e sindical</p>
-            </Link>
-
-            <Link href="/beneficios" className="card card-gray" style={{ textAlign: 'center', cursor: 'pointer', border: '2px solid transparent', position: 'relative', overflow: 'hidden' }}>
-              <span className="icon-xl">🎓</span>
-              <h3>Educação</h3>
-              <p>Até 45% de desconto em instituições de ensino parceiras</p>
-            </Link>
-
-            <Link href="/beneficios" className="card card-gray" style={{ textAlign: 'center', cursor: 'pointer', border: '2px solid transparent', position: 'relative', overflow: 'hidden' }}>
-              <span className="icon-xl">⚡</span>
-              <h3>Economia de Energia</h3>
-              <p>Até 20% de economia na conta de luz</p>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== BENEFÍCIOS SLIDER ========== */}
-      <section className="section" style={{
-        background: 'linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%)'
-      }}>
-        <div className="container">
-          <h2 className="section-title section-title-white">Benefícios Exclusivos</h2>
-          <p className="section-subtitle section-subtitle-white">
-            Vantagens reais para você e sua família
-          </p>
-
-          {/* Slider Container */}
-          <div style={{
-            background: 'var(--white)',
-            borderRadius: '20px',
-            padding: '50px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.2)'
-          }}>
-            {/* Slide 1 - Educação */}
-            {currentSlide === 0 && (
-              <div className="fade-in">
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                  <span style={{ fontSize: '48px' }}>🎓</span>
-                  <h3 style={{ color: 'var(--primary-green)', fontSize: '32px', marginTop: '20px' }}>Educação</h3>
-                </div>
-                <div style={{
-                  background: 'var(--light-gray)',
-                  padding: '30px',
-                  borderRadius: '15px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '20px'
-                }}>
-                  <div>
-                    <span className="badge badge-accent" style={{ marginBottom: '10px' }}>Destaque</span>
-                    <h4 style={{ fontSize: '22px', marginBottom: '8px' }}>Escolas e Universidades Parceiras</h4>
-                    <p style={{ color: 'var(--text-gray)' }}>Descontos exclusivos para você e sua família</p>
-                  </div>
-                  <span style={{
-                    background: 'var(--primary-green)',
-                    color: 'white',
-                    padding: '15px 25px',
-                    borderRadius: '50px',
-                    fontWeight: '700',
-                    fontSize: '16px'
-                  }}>
-                    Até 45% OFF
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Slide 2 - Energia */}
-            {currentSlide === 1 && (
-              <div className="fade-in">
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                  <span style={{ fontSize: '48px' }}>⚡</span>
-                  <h3 style={{ color: 'var(--primary-green)', fontSize: '32px', marginTop: '20px' }}>Economia de Energia</h3>
-                </div>
-                <div style={{
-                  background: 'var(--light-gray)',
-                  padding: '30px',
-                  borderRadius: '15px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '20px'
-                }}>
-                  <div>
-                    <span className="badge badge-accent" style={{ marginBottom: '10px' }}>Economia Real</span>
-                    <h4 style={{ fontSize: '22px', marginBottom: '8px' }}>Conta de Luz mais Barata</h4>
-                    <p style={{ color: 'var(--text-gray)' }}>Parceria exclusiva para médicos sindicalizados</p>
-                  </div>
-                  <span style={{
-                    background: 'var(--primary-green)',
-                    color: 'white',
-                    padding: '15px 25px',
-                    borderRadius: '50px',
-                    fontWeight: '700',
-                    fontSize: '16px'
-                  }}>
-                    Até 20% OFF
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Slide 3 - Seguros */}
-            {currentSlide === 2 && (
-              <div className="fade-in">
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                  <span style={{ fontSize: '48px' }}>🛡️</span>
-                  <h3 style={{ color: 'var(--primary-green)', fontSize: '32px', marginTop: '20px' }}>Seguros e Proteção</h3>
-                </div>
-                <div style={{
-                  background: 'var(--light-gray)',
-                  padding: '30px',
-                  borderRadius: '15px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '20px'
-                }}>
-                  <div>
-                    <span className="badge badge-accent" style={{ marginBottom: '10px' }}>Segurança</span>
-                    <h4 style={{ fontSize: '22px', marginBottom: '8px' }}>Seguros com Condições Especiais</h4>
-                    <p style={{ color: 'var(--text-gray)' }}>Proteção para você e sua família</p>
-                  </div>
-                  <span style={{
-                    background: 'var(--primary-green)',
-                    color: 'white',
-                    padding: '15px 25px',
-                    borderRadius: '50px',
-                    fontWeight: '700',
-                    fontSize: '16px'
-                  }}>
-                    Condições Especiais
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Slider Controls */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '40px' }}>
-            {[0, 1, 2].map((index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                style={{
-                  width: currentSlide === index ? '35px' : '12px',
-                  height: '12px',
-                  borderRadius: currentSlide === index ? '10px' : '50%',
-                  background: currentSlide === index ? 'white' : 'rgba(255, 255, 255, 0.3)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                aria-label={`Ir para slide ${index + 1}`}
-              />
-            ))}
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <Link href="/beneficios" className="btn btn-white">
-              Ver Todos os Benefícios
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== REGIÃO DE ATUAÇÃO ========== */}
-      <section className="section" style={{ background: 'var(--white)' }}>
-        <div className="container">
-          <h2 className="section-title">Nossa Área de Atuação</h2>
-          <p className="section-subtitle">
-            Presença consolidada nas principais cidades do Vale do Aço
-          </p>
-
-          <div className="grid-4">
-            <div className="regiao-card">
-              <span className="icon-lg">📍</span>
-              <h3>Ipatinga</h3>
-            </div>
-            <div className="regiao-card">
-              <span className="icon-lg">📍</span>
-              <h3>Timóteo</h3>
-            </div>
-            <div className="regiao-card">
-              <span className="icon-lg">📍</span>
-              <h3>Coronel Fabriciano</h3>
-            </div>
-            <div className="regiao-card">
-              <span className="icon-lg">📍</span>
-              <h3>Vale do Aço</h3>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== FAQ SECTION ========== */}
-      <section className="section" style={{ background: 'linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%)' }}>
-        <div className="container">
-          <h2 className="section-title">Perguntas Frequentes</h2>
-          <p className="section-subtitle">
-            Tire suas dúvidas sobre o SINMEVACO e como podemos ajudar você
-          </p>
-
-          <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            {faqData.map((item, index) => (
-              <FAQItem
-                key={index}
-                question={item.question}
-                answer={item.answer}
-                isOpen={openFAQ === index}
-                onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== CTA FINAL ========== */}
-      <section className="cta-section section">
-        <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '900px' }}>
-          <h2 style={{ color: 'white', fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '25px' }}>
-            Fortaleça a sua profissão. Faça parte do SINMEVACO.
-          </h2>
-          <p style={{ color: 'rgba(255, 255, 255, 0.95)', fontSize: '20px', marginBottom: '40px', lineHeight: '1.7' }}>
-            Junte-se aos médicos que defendem seus direitos, valorizam sua profissão e constroem uma classe médica mais forte no Vale do Aço.
-          </p>
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/associe-se" className="btn btn-white btn-lg">
-              🟢 Associe-se Agora
-            </Link>
-            <Link href="/contato" className="btn btn-secondary btn-lg">
-              ⚪ Fale Conosco
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CSS adicional para responsividade */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .cta-box-grid {
-            grid-template-columns: 1fr !important;
-            text-align: center;
-          }
-        }
-      `}</style>
     </>
   );
 }
