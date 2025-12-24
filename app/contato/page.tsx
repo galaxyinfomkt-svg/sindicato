@@ -594,9 +594,71 @@ export default function ContatoPage() {
           }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .form-grid-2 {
             grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
+
+      <style jsx global>{`
+        /* Mobile Contato Responsivo */
+        @media (max-width: 767px) {
+          .grade-4 {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+
+          .grade-4 .card-novo {
+            padding: 1.25rem !important;
+          }
+
+          .grade-form {
+            gap: 2rem !important;
+          }
+
+          .grade-form .card-novo {
+            padding: 1.25rem !important;
+          }
+
+          .faq-item .faq-question h3 {
+            font-size: 0.9375rem !important;
+          }
+
+          .secao {
+            padding: 3rem 0 !important;
+          }
+
+          .wrapper {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .grade-4 .card-novo {
+            padding: 1rem !important;
+          }
+
+          .grade-4 h3 {
+            font-size: 1.125rem !important;
+          }
+
+          .grade-4 p {
+            font-size: 0.875rem !important;
+          }
+
+          .botao-grande {
+            padding: 0.875rem 1.25rem !important;
+            font-size: 0.9375rem !important;
+          }
+
+          h1 {
+            font-size: 1.75rem !important;
+          }
+
+          h2 {
+            font-size: 1.5rem !important;
           }
         }
       `}</style>
