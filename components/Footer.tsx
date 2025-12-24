@@ -83,7 +83,7 @@ export default function Footer() {
             <div>
               <Link href="/" aria-label="SINMEVACO" style={{ display: 'inline-block', marginBottom: 'var(--space-md)' }}>
                 <Image
-                  src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/694027b096e7538a10c79781.png"
+                  src="/images/logo.png"
                   alt="SINMEVACO Logo"
                   width={180}
                   height={60}

@@ -43,7 +43,7 @@ function AnimarAoScroll({
   );
 }
 
-const categorias = ['Todas', 'Direitos', 'Legislação', 'Saúde', 'Tecnologia', 'Previdência'];
+const categorias = ['Todas', 'Direitos', 'Legislacao', 'Saude', 'Tecnologia', 'Previdencia', 'Carreira', 'Formacao', 'Financeiro', 'Protecao'];
 
 export default function NoticiasPage() {
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todas');
