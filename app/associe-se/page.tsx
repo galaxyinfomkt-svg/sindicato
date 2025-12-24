@@ -1,501 +1,714 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 
-// Hook para animações ao scroll
-function useScrollAnimation() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+// ============================================================
+// ASSOCIE-SE - LAYOUT 100% NOVO - SINMEVACO
+// ============================================================
+
+// Componente de Animação ao Scroll
+function AnimarAoScroll({
+  children,
+  classe = 'animar-surgir',
+  atraso = 0
+}: {
+  children: React.ReactNode
+  classe?: string
+  atraso?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visivel, setVisivel] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          setVisivel(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+    )
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, isVisible };
-}
-
-// Componente de animação
-function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const { ref, isVisible } = useScrollAnimation();
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div
       ref={ref}
-      className={`animate-fade-up ${isVisible ? 'animate-visible' : ''} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={`${classe} ${visivel ? 'animado' : ''}`}
+      style={{ transitionDelay: `${atraso}s` }}
     >
       {children}
     </div>
-  );
+  )
 }
 
-// FAQ Data
-const faqData = [
+// Benefícios
+const beneficios = [
   {
-    question: "Como funciona o processo de filiação?",
-    answer: "O processo é simples e rápido. Basta preencher o formulário nesta página ou entrar em contato pelo WhatsApp. Nossa equipe entrará em contato para finalizar a documentação e você já começa a aproveitar os benefícios imediatamente."
+    icone: '⚖️',
+    titulo: 'Apoio Jurídico',
+    descricao: 'Assessoria jurídica gratuita em questões trabalhistas, administrativas e sindicais.',
+    destaque: true
   },
   {
-    question: "Quanto custa a mensalidade?",
-    answer: "Para informações sobre valores de mensalidade e condições de pagamento, entre em contato conosco pelo WhatsApp (31) 99717-8316. Nossa equipe fornecerá todos os detalhes sobre investimento e formas de pagamento."
+    icone: '🎓',
+    titulo: 'Educação',
+    descricao: 'Até 45% de desconto em graduação, pós-graduação e cursos de especialização.',
+    destaque: false
   },
   {
-    question: "Médicos de todas as especialidades podem se associar?",
-    answer: "Sim! O SINMEVACO representa médicos de todas as especialidades que atuam no Vale do Aço. Independente da sua área de atuação, você pode se associar e contar com nossa representação."
+    icone: '⚡',
+    titulo: 'Economia de Energia',
+    descricao: 'Até 20% de economia na conta de luz com nosso programa exclusivo.',
+    destaque: false
   },
   {
-    question: "Como funciona o programa de indicação?",
-    answer: "Quando você indica um colega médico que se associa, ambos ganham 1 mês de mensalidade grátis. Quanto mais você indica, mais meses grátis você acumula!"
+    icone: '🎁',
+    titulo: 'Programa de Indicação',
+    descricao: 'Indique colegas e ganhe 1 mês grátis de mensalidade para cada indicação.',
+    destaque: true
   },
   {
-    question: "Os benefícios começam a valer imediatamente?",
-    answer: "Sim! Após a confirmação da sua filiação, você já pode começar a usufruir de todos os benefícios do SINMEVACO, incluindo apoio jurídico, descontos em educação, economia na conta de energia e muito mais."
+    icone: '🏥',
+    titulo: 'Saúde e Bem-estar',
+    descricao: 'Descontos em academias, clínicas e serviços de saúde parceiros.',
+    destaque: false
+  },
+  {
+    icone: '🛡️',
+    titulo: 'Defesa Profissional',
+    descricao: 'Representação e acompanhamento em processos éticos e disciplinares.',
+    destaque: false
   }
-];
+]
 
-export default function AssocieSe() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    crm: '',
-    especialidade: '',
-    cidade: '',
-    indicadoPor: '',
-    mensagem: ''
-  });
+// Passos para se associar
+const passos = [
+  {
+    numero: '01',
+    titulo: 'Preencha o Formulário',
+    descricao: 'Complete seus dados no formulário abaixo ou entre em contato pelo WhatsApp.'
+  },
+  {
+    numero: '02',
+    titulo: 'Análise Rápida',
+    descricao: 'Nossa equipe analisa sua solicitação e entra em contato em até 24 horas.'
+  },
+  {
+    numero: '03',
+    titulo: 'Seja Bem-vindo!',
+    descricao: 'Após aprovação, você já pode usufruir de todos os benefícios exclusivos.'
+  }
+]
+
+// FAQ
+const faqAssociacao = [
+  {
+    pergunta: 'Quem pode se associar ao SINMEVACO?',
+    resposta: 'Podem se associar todos os médicos que atuam na região do Vale do Aço, incluindo Ipatinga, Timóteo, Coronel Fabriciano e cidades vizinhas.'
+  },
+  {
+    pergunta: 'Qual o valor da mensalidade?',
+    resposta: 'O valor da mensalidade é acessível e proporcional aos benefícios oferecidos. Entre em contato para conhecer as condições especiais de adesão.'
+  },
+  {
+    pergunta: 'Os benefícios começam a valer imediatamente?',
+    resposta: 'Sim! Assim que sua filiação é aprovada, você já pode usufruir de todos os benefícios do sindicato, incluindo apoio jurídico e descontos.'
+  },
+  {
+    pergunta: 'Como funciona o programa de indicação?',
+    resposta: 'A cada colega médico que você indicar e que se filiar ao sindicato, você ganha 1 mês grátis de mensalidade. Não há limite de indicações!'
+  },
+  {
+    pergunta: 'Posso cancelar a qualquer momento?',
+    resposta: 'Sim, você pode solicitar o cancelamento a qualquer momento. Porém, nossa taxa de satisfação é alta e temos certeza que você aproveitará muito os benefícios.'
+  }
+]
+
+export default function AssociesePage() {
+  const [faqAberto, setFaqAberto] = useState<number | null>(null)
+  const [formEnviado, setFormEnviado] = useState(false)
+
+  const toggleFaq = (index: number) => {
+    setFaqAberto(faqAberto === index ? null : index)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const message = `Olá! Gostaria de me associar ao SINMEVACO.%0A%0ANome: ${formData.nome}%0AEmail: ${formData.email}%0ATelefone: ${formData.telefone}%0ACRM: ${formData.crm}%0AEspecialidade: ${formData.especialidade}%0ACidade: ${formData.cidade}${formData.indicadoPor ? `%0AIndicado por: ${formData.indicadoPor}` : ''}${formData.mensagem ? `%0AMensagem: ${formData.mensagem}` : ''}`;
-    window.open(`https://wa.me/5531997178316?text=${message}`, '_blank');
-  };
+    e.preventDefault()
+    setFormEnviado(true)
+  }
 
   return (
-    <>
-      {/* Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            "name": "Filiação ao SINMEVACO",
-            "description": "Associe-se ao Sindicato dos Médicos do Vale do Aço e tenha acesso a apoio jurídico, benefícios exclusivos e representação sindical.",
-            "provider": {
-              "@type": "Organization",
-              "name": "SINMEVACO"
-            },
-            "areaServed": ["Ipatinga", "Timóteo", "Coronel Fabriciano", "Vale do Aço"]
-          })
-        }}
-      />
-
+    <main>
       {/* ========== HERO SECTION ========== */}
-      <section className="hero-gradient min-h-[70vh] flex items-center relative pt-32 pb-20">
-        {/* Decorative Elements */}
-        <div className="absolute top-20 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+      <section className="hero-verde" style={{ minHeight: '70vh', paddingTop: '140px' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
+              <span className="etiqueta etiqueta-laranja" style={{ marginBottom: '2rem', display: 'inline-flex' }}>
+                🎉 Oferta Especial
+              </span>
 
-        <div className="container relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            {/* Breadcrumb */}
-            <nav className="flex items-center justify-center gap-2 text-sm mb-8 animate-fade-up">
-              <Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link>
-              <span className="text-white/50">/</span>
-              <span className="text-white">Associe-se</span>
-            </nav>
+              <h1 className="texto-claro" style={{ marginBottom: '1.5rem' }}>
+                Faça Parte do <span className="texto-gradiente">SINMEVACO</span>
+              </h1>
 
-            <div className="inline-flex items-center gap-2 bg-accent/90 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5 mb-6 animate-fade-up animate-pulse">
-              <span className="text-lg">🎁</span>
-              <span className="text-sm font-bold">Indique um colega e ganhe 1 mês grátis!</span>
+              <p className="texto-claro-90" style={{
+                fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)',
+                maxWidth: '700px',
+                margin: '0 auto var(--space-lg)',
+                lineHeight: 1.8
+              }}>
+                Junte-se a milhares de médicos que confiam no sindicato
+                para defender seus direitos e conquistar benefícios exclusivos.
+              </p>
+
+              {/* Destaque Programa de Indicação */}
+              <div style={{
+                background: 'rgba(255,255,255,0.15)',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderRadius: 'var(--radius-xl)',
+                padding: 'var(--space-lg)',
+                maxWidth: '500px',
+                margin: '0 auto var(--space-xl)'
+              }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎁</div>
+                <h3 className="texto-claro" style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>
+                  Programa de Indicação
+                </h3>
+                <p className="texto-claro-90" style={{ fontSize: '1rem' }}>
+                  Indique colegas e ganhe <strong style={{ color: 'var(--laranja-400)' }}>1 mês grátis</strong> para cada indicação!
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="#formulario" className="botao botao-laranja botao-grande">
+                  Quero me Associar
+                  <span style={{ marginLeft: '0.5rem' }}>→</span>
+                </a>
+                <a href="#beneficios" className="botao botao-outline-claro botao-grande">
+                  Ver Benefícios
+                </a>
+              </div>
             </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-[1.1] animate-fade-up" style={{ animationDelay: '100ms' }}>
-              Faça Parte do <span className="text-gradient">SINMEVACO</span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: '200ms' }}>
-              Junte-se ao sindicato que defende seus direitos há mais de <strong>32 anos</strong>.
-              Apoio jurídico, benefícios exclusivos e representação forte.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up" style={{ animationDelay: '300ms' }}>
-              <a href="#formulario" className="btn btn-accent btn-xl">
-                Quero me Associar
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </a>
-              <a
-                href="https://wa.me/5531997178316?text=Olá! Gostaria de me associar ao SINMEVACO."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline-white btn-xl"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                Falar no WhatsApp
-              </a>
-            </div>
-          </div>
+          </AnimarAoScroll>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        {/* Onda decorativa */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', width: '100%' }}>
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="var(--branco-soft)"/>
           </svg>
         </div>
       </section>
 
       {/* ========== POR QUE SE ASSOCIAR ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Vantagens Exclusivas</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Por que se <span className="text-primary">associar</span>?
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Benefícios reais que fazem a diferença na sua carreira e na sua vida
-            </p>
-          </AnimatedSection>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: '⚖️', title: 'Apoio Jurídico', desc: 'Assessoria especializada em direito médico, trabalhista, administrativo e sindical.' },
-              { icon: '🎓', title: 'Educação', desc: 'Até 45% de desconto em instituições de ensino parceiras para você e sua família.' },
-              { icon: '⚡', title: 'Economia de Energia', desc: 'Até 20% de economia na conta de luz através de parcerias exclusivas.' },
-              { icon: '🛡️', title: 'Seguros Especiais', desc: 'Condições diferenciadas em seguros de vida, responsabilidade civil e outros.' },
-              { icon: '🏥', title: 'Saúde e Bem-estar', desc: 'Descontos em clínicas, laboratórios e serviços de saúde parceiros.' },
-              { icon: '🤝', title: 'Representação Forte', desc: 'Voz ativa nas negociações coletivas e defesa dos interesses da categoria.' }
-            ].map((item, index) => (
-              <AnimatedSection key={index} delay={index * 100}>
-                <div className="card h-full text-center group hover:border-primary/30 border-2 border-transparent">
-                  <div className="icon-box mx-auto mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-3xl">{item.icon}</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600">{item.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== PROGRAMA DE INDICAÇÃO ========== */}
-      <section className="section bg-gradient-to-br from-accent to-orange-600 text-white overflow-hidden relative">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 border-4 border-white rounded-full" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 border-4 border-white rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border-4 border-white rounded-full" />
-        </div>
-
-        <div className="container relative z-10">
-          <AnimatedSection className="text-center mb-12">
-            <span className="text-6xl mb-4 block">🎁</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Programa de Indicação
-            </h2>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Indique colegas médicos e ganhe benefícios exclusivos.
-              Para cada indicação efetivada, você e o novo associado ganham <strong>1 mês grátis!</strong>
-            </p>
-          </AnimatedSection>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-            {[
-              { num: '1', title: 'Indique', desc: 'Convide colegas médicos' },
-              { num: '2', title: 'Associação', desc: 'Colega se filia ao sindicato' },
-              { num: '🎉', title: 'Ganhem!', desc: '1 mês grátis para ambos', highlight: true }
-            ].map((step, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className={`bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border-2 ${step.highlight ? 'border-white bg-white/20' : 'border-white/20'}`}>
-                  <div className="w-14 h-14 bg-white text-accent rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                    {step.num}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className={step.highlight ? 'font-bold' : 'text-white/80'}>{step.desc}</p>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-
-          <AnimatedSection delay={300} className="text-center">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md mx-auto border border-white/20">
-              <div className="text-5xl font-extrabold mb-2">∞</div>
-              <div className="text-xl font-semibold mb-4">Indicações Ilimitadas!</div>
-              <div className="space-y-2 text-white/90">
-                <p>5 indicações = 5 meses grátis</p>
-                <p className="font-bold text-lg">12 indicações = 1 ano grátis!</p>
-              </div>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* ========== FORMULÁRIO DE FILIAÇÃO ========== */}
-      <section id="formulario" className="section bg-light overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Formulário */}
-            <AnimatedSection>
-              <span className="section-badge">Cadastro</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Preencha seus <span className="text-primary">dados</span>
+      <section id="beneficios" className="secao" style={{ background: 'var(--branco-soft)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                ✨ Vantagens Exclusivas
+              </span>
+              <h2 className="texto-escuro">
+                Por que se <span className="texto-gradiente">associar?</span>
               </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Complete o formulário abaixo e nossa equipe entrará em contato para finalizar sua filiação.
-              </p>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome Completo *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.nome}
-                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                      placeholder="Seu nome completo"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    />
+          <div className="grade-3">
+            {beneficios.map((beneficio, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div className="card-novo" style={{
+                  height: '100%',
+                  padding: 'var(--space-xl)',
+                  border: beneficio.destaque ? '2px solid var(--verde-400)' : undefined,
+                  background: beneficio.destaque ? 'linear-gradient(145deg, #f0fdf4, #ffffff)' : undefined,
+                  position: 'relative'
+                }}>
+                  {beneficio.destaque && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '-12px',
+                      right: '20px',
+                      background: 'linear-gradient(145deg, var(--laranja-500), var(--laranja-400))',
+                      color: 'white',
+                      padding: '0.375rem 1rem',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: '0.75rem',
+                      fontWeight: 700
+                    }}>
+                      Destaque
+                    </span>
+                  )}
+
+                  <div style={{
+                    width: '70px',
+                    height: '70px',
+                    background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '2rem',
+                    marginBottom: 'var(--space-lg)',
+                    boxShadow: '0 6px 20px rgba(23, 93, 59, 0.2)'
+                  }}>
+                    {beneficio.icone}
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">CRM *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.crm}
-                      onChange={(e) => setFormData({ ...formData, crm: e.target.value })}
-                      placeholder="Seu CRM"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    />
+
+                  <h3 style={{
+                    color: 'var(--preto-soft)',
+                    fontSize: '1.25rem',
+                    marginBottom: '0.75rem'
+                  }}>
+                    {beneficio.titulo}
+                  </h3>
+
+                  <p style={{
+                    color: 'var(--cinza-500)',
+                    lineHeight: 1.8
+                  }}>
+                    {beneficio.descricao}
+                  </p>
+                </div>
+              </AnimarAoScroll>
+            ))}
+          </div>
+
+          <AnimarAoScroll atraso={0.4}>
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-xl)' }}>
+              <Link href="/beneficios" className="botao botao-outline-verde">
+                Ver Todos os Benefícios
+                <span style={{ marginLeft: '0.5rem' }}>→</span>
+              </Link>
+            </div>
+          </AnimarAoScroll>
+        </div>
+      </section>
+
+      {/* ========== COMO FUNCIONA ========== */}
+      <section className="secao bg-verde" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '50%',
+          height: '100%',
+          background: 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 50%)',
+          pointerEvents: 'none'
+        }}></div>
+
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta etiqueta-clara" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                📋 Processo Simples
+              </span>
+              <h2 className="texto-claro">
+                Como se Associar
+              </h2>
+              <div className="divisor divisor-claro" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
+
+          <div className="grade-3">
+            {passos.map((passo, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.15}>
+                <div className="card-glass" style={{
+                  textAlign: 'center',
+                  padding: 'var(--space-xl)',
+                  height: '100%'
+                }}>
+                  <div style={{
+                    fontSize: '3rem',
+                    fontWeight: 800,
+                    fontFamily: 'var(--font-display)',
+                    background: 'linear-gradient(135deg, #fff, rgba(255,255,255,0.7))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    marginBottom: 'var(--space-md)'
+                  }}>
+                    {passo.numero}
                   </div>
+
+                  <h3 className="texto-claro" style={{
+                    fontSize: '1.25rem',
+                    marginBottom: '0.75rem'
+                  }}>
+                    {passo.titulo}
+                  </h3>
+
+                  <p className="texto-claro-80" style={{ lineHeight: 1.8 }}>
+                    {passo.descricao}
+                  </p>
+                </div>
+              </AnimarAoScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FORMULÁRIO ========== */}
+      <section id="formulario" className="secao" style={{ background: 'var(--branco)' }}>
+        <div className="wrapper">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: 'var(--space-3xl)',
+            alignItems: 'start'
+          }} className="grade-form">
+
+            {/* Coluna do Formulário */}
+            <AnimarAoScroll classe="animar-esquerda">
+              <div className="card-novo" style={{ padding: 'var(--space-xl)' }}>
+                <div style={{ marginBottom: 'var(--space-xl)' }}>
+                  <span className="etiqueta etiqueta-laranja" style={{ marginBottom: '1rem', display: 'inline-flex' }}>
+                    ✍️ Cadastro Rápido
+                  </span>
+                  <h2 className="texto-escuro" style={{ fontSize: 'clamp(1.75rem, 3vw, 2.25rem)' }}>
+                    Formulário de Filiação
+                  </h2>
+                  <p style={{ color: 'var(--cinza-500)', marginTop: '0.75rem' }}>
+                    Preencha seus dados e entraremos em contato em até 24 horas.
+                  </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail *</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="seu@email.com"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone/WhatsApp *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.telefone}
-                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      placeholder="(31) 99999-9999"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Especialidade</label>
-                    <input
-                      type="text"
-                      value={formData.especialidade}
-                      onChange={(e) => setFormData({ ...formData, especialidade: e.target.value })}
-                      placeholder="Sua especialidade médica"
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cidade *</label>
-                    <select
-                      required
-                      value={formData.cidade}
-                      onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
+                {formEnviado ? (
+                  <div style={{
+                    background: 'linear-gradient(145deg, #f0fdf4, #dcfce7)',
+                    border: '2px solid var(--verde-400)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: 'var(--space-xl)',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>🎉</div>
+                    <h3 style={{ color: 'var(--verde-600)', marginBottom: '0.5rem' }}>
+                      Solicitação Enviada!
+                    </h3>
+                    <p style={{ color: 'var(--verde-500)', marginBottom: 'var(--space-lg)' }}>
+                      Obrigado pelo interesse! Nossa equipe entrará em contato em breve.
+                    </p>
+                    <a
+                      href="https://wa.me/5531997178316"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="botao botao-verde"
                     >
-                      <option value="">Selecione sua cidade</option>
-                      <option value="Ipatinga">Ipatinga</option>
-                      <option value="Timóteo">Timóteo</option>
-                      <option value="Coronel Fabriciano">Coronel Fabriciano</option>
-                      <option value="Outra cidade do Vale do Aço">Outra cidade do Vale do Aço</option>
-                    </select>
+                      Falar pelo WhatsApp
+                      <span style={{ marginLeft: '0.5rem' }}>💬</span>
+                    </a>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-grupo">
+                      <label className="form-label">Nome completo *</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Dr. João Silva"
+                        required
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }} className="form-grid-2">
+                      <div className="form-grupo">
+                        <label className="form-label">CRM *</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="CRM-MG 00000"
+                          required
+                        />
+                      </div>
+                      <div className="form-grupo">
+                        <label className="form-label">Especialidade</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="Clínica Médica"
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }} className="form-grid-2">
+                      <div className="form-grupo">
+                        <label className="form-label">E-mail *</label>
+                        <input
+                          type="email"
+                          className="form-input"
+                          placeholder="seu@email.com"
+                          required
+                        />
+                      </div>
+                      <div className="form-grupo">
+                        <label className="form-label">WhatsApp *</label>
+                        <input
+                          type="tel"
+                          className="form-input"
+                          placeholder="(31) 99999-9999"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-grupo">
+                      <label className="form-label">Cidade de atuação *</label>
+                      <select className="form-input form-select" required>
+                        <option value="">Selecione sua cidade</option>
+                        <option value="ipatinga">Ipatinga</option>
+                        <option value="timoteo">Timóteo</option>
+                        <option value="coronel-fabriciano">Coronel Fabriciano</option>
+                        <option value="outra">Outra cidade do Vale do Aço</option>
+                      </select>
+                    </div>
+
+                    <div className="form-grupo">
+                      <label className="form-label">Você foi indicado por algum associado?</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Nome do associado que indicou (opcional)"
+                      />
+                    </div>
+
+                    <button type="submit" className="botao botao-laranja botao-grande" style={{ width: '100%' }}>
+                      Enviar Solicitação
+                      <span style={{ marginLeft: '0.5rem' }}>→</span>
+                    </button>
+                  </form>
+                )}
+              </div>
+            </AnimarAoScroll>
+
+            {/* Coluna de Informações */}
+            <AnimarAoScroll classe="animar-direita" atraso={0.2}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+
+                {/* Card WhatsApp */}
+                <div style={{
+                  background: 'linear-gradient(145deg, #25D366, #128C7E)',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 'var(--space-xl)',
+                  color: 'white',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-20%',
+                    right: '-10%',
+                    width: '200px',
+                    height: '200px',
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: '50%'
+                  }}></div>
+
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-md)' }}>📱</div>
+                    <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>
+                      Prefere WhatsApp?
+                    </h3>
+                    <p style={{ opacity: 0.9, marginBottom: 'var(--space-lg)', lineHeight: 1.7 }}>
+                      Fale diretamente com nossa equipe e tire suas dúvidas sobre a filiação.
+                    </p>
+                    <a
+                      href="https://wa.me/5531997178316?text=Olá! Tenho interesse em me filiar ao SINMEVACO."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="botao botao-branco"
+                      style={{ color: '#25D366' }}
+                    >
+                      Iniciar Conversa
+                      <span style={{ marginLeft: '0.5rem' }}>💬</span>
+                    </a>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Indicado por (opcional)</label>
-                  <input
-                    type="text"
-                    value={formData.indicadoPor}
-                    onChange={(e) => setFormData({ ...formData, indicadoPor: e.target.value })}
-                    placeholder="Nome do médico que indicou você"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                  />
-                  <p className="text-sm text-gray-500 mt-2">
-                    Se foi indicado por um colega, informe o nome para que ambos ganhem 1 mês grátis!
-                  </p>
+                {/* Card Programa de Indicação */}
+                <div className="card-novo card-borda-esquerda" style={{
+                  padding: 'var(--space-lg)',
+                  borderLeftColor: 'var(--laranja-500)',
+                  borderLeftWidth: '4px'
+                }}>
+                  <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'flex-start' }}>
+                    <div style={{
+                      background: 'linear-gradient(145deg, var(--laranja-500), var(--laranja-400))',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '56px',
+                      height: '56px',
+                      flexShrink: 0
+                    }}>
+                      <span style={{ fontSize: '1.5rem' }}>🎁</span>
+                    </div>
+                    <div>
+                      <h4 style={{ color: 'var(--preto-soft)', marginBottom: '0.5rem' }}>
+                        Programa de Indicação
+                      </h4>
+                      <p style={{ color: 'var(--cinza-500)', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+                        Indique colegas e ganhe <strong style={{ color: 'var(--laranja-500)' }}>1 mês grátis</strong> de
+                        mensalidade para cada médico que se filiar!
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Mensagem (opcional)</label>
-                  <textarea
-                    value={formData.mensagem}
-                    onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    placeholder="Alguma informação adicional?"
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white resize-none"
-                  />
-                </div>
-
-                <button type="submit" className="btn btn-primary btn-xl w-full">
-                  Enviar Solicitação de Filiação
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-              </form>
-            </AnimatedSection>
-
-            {/* Informações laterais */}
-            <AnimatedSection delay={200}>
-              <div className="space-y-6">
-                {/* Contato Direto */}
-                <div className="bg-gradient-to-br from-primary to-primary-light rounded-2xl p-8 text-white">
-                  <h3 className="text-2xl font-bold mb-4">Contato Direto</h3>
-                  <p className="text-white/90 mb-6">
-                    Prefere falar diretamente com nossa equipe? Entre em contato pelo WhatsApp!
-                  </p>
-                  <a
-                    href="https://wa.me/5531997178316?text=Olá! Gostaria de me associar ao SINMEVACO."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-white w-full justify-center"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    WhatsApp: (31) 99717-8316
-                  </a>
-                </div>
-
-                {/* Lista de Benefícios */}
-                <div className="card">
-                  <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <span className="text-primary">✓</span> Ao se associar você terá:
+                {/* Estatísticas */}
+                <div className="card-novo" style={{ padding: 'var(--space-lg)' }}>
+                  <h4 style={{ color: 'var(--preto-soft)', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>
+                    Por que médicos confiam no SINMEVACO
                   </h4>
-                  <div className="space-y-4">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-md)' }}>
                     {[
-                      'Apoio jurídico especializado',
-                      'Até 45% de desconto em educação',
-                      'Até 20% de economia na energia',
-                      'Seguros com condições especiais',
-                      'Representação sindical forte',
-                      'Programa de indicação (1 mês grátis)'
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-light hover:bg-primary/5 transition-colors">
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
+                      { numero: '32+', label: 'Anos de história' },
+                      { numero: '100%', label: 'Compromisso' },
+                      { numero: '24h', label: 'Suporte jurídico' },
+                      { numero: '45%', label: 'Desc. educação' }
+                    ].map((stat, index) => (
+                      <div key={index} style={{
+                        textAlign: 'center',
+                        padding: 'var(--space-sm)',
+                        background: 'var(--cinza-50)',
+                        borderRadius: 'var(--radius-md)'
+                      }}>
+                        <div style={{
+                          fontSize: '1.5rem',
+                          fontWeight: 800,
+                          color: 'var(--verde-500)',
+                          fontFamily: 'var(--font-display)'
+                        }}>
+                          {stat.numero}
                         </div>
-                        <span className="text-gray-700">{item}</span>
+                        <div style={{ fontSize: '0.8125rem', color: 'var(--cinza-500)' }}>
+                          {stat.label}
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
+
               </div>
-            </AnimatedSection>
+            </AnimarAoScroll>
           </div>
         </div>
       </section>
 
       {/* ========== FAQ ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Dúvidas Frequentes</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Dúvidas sobre <span className="text-primary">Filiação</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Perguntas frequentes sobre como se associar ao SINMEVACO
-            </p>
-          </AnimatedSection>
+      <section className="secao" style={{ background: 'var(--cinza-50)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                ❓ Tire Suas Dúvidas
+              </span>
+              <h2 className="texto-escuro">
+                Perguntas <span className="texto-gradiente">Frequentes</span>
+              </h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
 
-          <div className="max-w-3xl mx-auto">
-            {faqData.map((faq, i) => (
-              <AnimatedSection key={i} delay={i * 50}>
-                <div className={`faq-item ${openFaq === i ? 'active' : ''}`}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            {faqAssociacao.map((item, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div
+                  className={`faq-item ${faqAberto === index ? 'active' : ''}`}
+                  style={{ marginBottom: 'var(--space-md)' }}
+                >
                   <div
                     className="faq-question"
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    onClick={() => toggleFaq(index)}
                   >
-                    <h3>{faq.question}</h3>
-                    <span className="faq-toggle">+</span>
+                    <h3>{item.pergunta}</h3>
+                    <div className="faq-toggle">+</div>
                   </div>
                   <div className="faq-answer">
                     <div className="faq-answer-inner">
-                      <p>{faq.answer}</p>
+                      <p>{item.resposta}</p>
                     </div>
                   </div>
                 </div>
-              </AnimatedSection>
+              </AnimarAoScroll>
             ))}
           </div>
         </div>
       </section>
 
       {/* ========== CTA FINAL ========== */}
-      <section className="cta-section section text-white overflow-hidden">
-        <div className="container relative z-10">
-          <AnimatedSection className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Não deixe para depois!
-            </h2>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              Associe-se hoje e comece a aproveitar todos os benefícios do SINMEVACO.
-              Juntos somos mais fortes!
-            </p>
+      <section className="secao cta-verde" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-3xl)' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+              <span className="etiqueta etiqueta-laranja" style={{ marginBottom: '2rem', display: 'inline-flex' }}>
+                🚀 Não Perca Tempo
+              </span>
 
-            <a
-              href="https://wa.me/5531997178316?text=Olá! Gostaria de me associar ao SINMEVACO."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-accent btn-xl"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
-              Falar no WhatsApp Agora
-            </a>
-          </AnimatedSection>
+              <h2 className="texto-claro" style={{ marginBottom: '1.5rem' }}>
+                Sua filiação está a um clique
+              </h2>
+
+              <p className="texto-claro-90" style={{
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-xl)',
+                lineHeight: 1.8
+              }}>
+                Não deixe para depois. Associe-se agora e comece a usufruir
+                de todos os benefícios exclusivos do SINMEVACO.
+              </p>
+
+              <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="#formulario" className="botao botao-laranja botao-grande">
+                  Preencher Formulário
+                  <span style={{ marginLeft: '0.5rem' }}>→</span>
+                </a>
+                <a
+                  href="https://wa.me/5531997178316"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="botao botao-outline-claro botao-grande"
+                >
+                  Falar pelo WhatsApp
+                </a>
+              </div>
+            </div>
+          </AnimarAoScroll>
         </div>
       </section>
-    </>
-  );
+
+      {/* ========== WHATSAPP FLUTUANTE ========== */}
+      <a
+        href="https://wa.me/5531997178316"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-flutuante"
+        aria-label="Fale conosco pelo WhatsApp"
+      >
+        💬
+      </a>
+
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          .grade-form {
+            grid-template-columns: 1.1fr 0.9fr !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .form-grid-2 {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
+    </main>
+  )
 }

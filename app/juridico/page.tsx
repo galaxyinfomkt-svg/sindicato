@@ -1,488 +1,240 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
-// Hook para animações ao scroll
-function useScrollAnimation() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+// ============================================================
+// JURÍDICO - LAYOUT 100% NOVO - SINMEVACO
+// ============================================================
+
+function AnimarAoScroll({
+  children,
+  classe = 'animar-surgir',
+  atraso = 0
+}: {
+  children: React.ReactNode
+  classe?: string
+  atraso?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visivel, setVisivel] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          setVisivel(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, isVisible };
-}
-
-// Componente de animação
-function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const { ref, isVisible } = useScrollAnimation();
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <div
-      ref={ref}
-      className={`animate-fade-up ${isVisible ? 'animate-visible' : ''} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
+    <div ref={ref} className={`${classe} ${visivel ? 'animado' : ''}`} style={{ transitionDelay: `${atraso}s` }}>
       {children}
     </div>
-  );
+  )
 }
 
+const areasAtuacao = [
+  { icone: '💼', titulo: 'Direito Trabalhista', descricao: 'Defesa em processos trabalhistas, rescisões, horas extras, adicional de insalubridade e demais questões laborais.', cor: 'var(--verde-500)' },
+  { icone: '🏛️', titulo: 'Direito Administrativo', descricao: 'Acompanhamento em processos administrativos, concursos públicos e questões com órgãos governamentais.', cor: 'var(--laranja-500)' },
+  { icone: '🤝', titulo: 'Direito Sindical', descricao: 'Negociações coletivas, acordos sindicais e representação da categoria médica.', cor: 'var(--verde-400)' }
+]
+
+const comoFunciona = [
+  { numero: '01', titulo: 'Entre em Contato', descricao: 'Agende um atendimento pelo WhatsApp ou formulário.' },
+  { numero: '02', titulo: 'Análise do Caso', descricao: 'Nossos advogados analisam sua situação detalhadamente.' },
+  { numero: '03', titulo: 'Orientação Jurídica', descricao: 'Você recebe orientação personalizada sobre seus direitos.' },
+  { numero: '04', titulo: 'Acompanhamento', descricao: 'Se necessário, representamos você em todo o processo.' }
+]
+
+const faqJuridico = [
+  { pergunta: 'O apoio jurídico é gratuito para associados?', resposta: 'Sim! Todos os associados têm direito a orientação jurídica gratuita nas áreas trabalhista, administrativa e sindical.' },
+  { pergunta: 'Posso consultar sobre qualquer assunto jurídico?', resposta: 'O apoio jurídico do sindicato é focado em questões relacionadas à profissão médica: trabalhistas, previdenciárias e administrativas.' },
+  { pergunta: 'Quanto tempo demora para ser atendido?', resposta: 'Buscamos atender todas as demandas em até 48 horas úteis. Para urgências, oferecemos atendimento prioritário.' },
+  { pergunta: 'O sindicato pode me representar em processos?', resposta: 'Sim, além da orientação, podemos representar você em processos trabalhistas, administrativos e sindicais.' }
+]
+
 export default function JuridicoPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
-    nome: '',
-    telefone: '',
-    email: '',
-    assunto: '',
-    mensagem: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const message = `Olá! Sou ${formData.nome} e preciso de apoio jurídico.%0A%0A*Assunto:* ${formData.assunto}%0A*E-mail:* ${formData.email}%0A%0A*Descrição:*%0A${formData.mensagem}`;
-    window.open(`https://wa.me/5531997178316?text=${message}`, '_blank');
-  };
-
-  const areasAtuacao = [
-    {
-      icon: "⚖️",
-      title: "Direito Trabalhista",
-      description: "Defesa em ações trabalhistas, revisão de contratos, cálculo de verbas rescisórias e assédio moral.",
-      items: ["Ações trabalhistas", "Revisão de contratos", "Cálculos de verbas", "Assédio moral", "Horas extras", "Insalubridade"]
-    },
-    {
-      icon: "🏛️",
-      title: "Direito Administrativo",
-      description: "Representação em processos administrativos, concursos públicos e questões com órgãos de saúde.",
-      items: ["Processos administrativos", "Concursos públicos", "PAD e sindicâncias", "Licenças", "Aposentadoria", "Gratificações"]
-    },
-    {
-      icon: "🤝",
-      title: "Direito Sindical",
-      description: "Negociações coletivas, acordos e convenções, representação em conflitos coletivos.",
-      items: ["Acordos coletivos", "Convenções", "Negociações salariais", "Pisos salariais", "Condições de trabalho", "Greves"]
-    }
-  ];
-
-  const etapas = [
-    { numero: "01", titulo: "Contato Inicial", descricao: "Entre em contato pelo WhatsApp ou formulário" },
-    { numero: "02", titulo: "Análise do Caso", descricao: "Nossa equipe analisa sua situação" },
-    { numero: "03", titulo: "Orientação", descricao: "Você recebe orientação especializada" },
-    { numero: "04", titulo: "Acompanhamento", descricao: "Se necessário, encaminhamos para escritório parceiro" }
-  ];
-
-  const faqData = [
-    { question: "O apoio jurídico é gratuito para associados?", answer: "Sim! Associados têm acesso a orientação jurídica gratuita. Para ações judiciais, há condições especiais com escritórios parceiros." },
-    { question: "Quanto tempo tenho para entrar com uma ação trabalhista?", answer: "O prazo é de 2 anos após o término do contrato, podendo reclamar os últimos 5 anos de direitos." },
-    { question: "Como funciona o atendimento jurídico?", answer: "Entre em contato para agendar uma consulta. Nossa equipe analisará seu caso e indicará o melhor caminho." },
-    { question: "Posso ser representado em processos éticos?", answer: "Sim, oferecemos apoio em processos junto ao CRM e outros órgãos." },
-    { question: "O sindicato pode intervir em negociações com hospitais?", answer: "Sim, atuamos em negociações coletivas buscando melhores condições de trabalho." },
-    { question: "Como solicitar apoio jurídico?", answer: "Entre em contato pelo WhatsApp (31) 99717-8316, preencha o formulário ou compareça à sede." }
-  ];
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://sinmevaco.com.br" },
-      { "@type": "ListItem", "position": 2, "name": "Jurídico", "item": "https://sinmevaco.com.br/juridico" }
-    ]
-  };
-
-  const serviceSchema = {
-    "@context": "https://schema.org",
-    "@type": "LegalService",
-    "name": "Apoio Jurídico SINMEVACO",
-    "description": "Serviço de apoio jurídico especializado para médicos do Vale do Aço.",
-    "provider": { "@type": "Organization", "name": "SINMEVACO" },
-    "areaServed": ["Ipatinga", "Timóteo", "Coronel Fabriciano", "Vale do Aço"]
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqData.map(item => ({
-      "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": { "@type": "Answer", "text": item.answer }
-    }))
-  };
+  const [faqAberto, setFaqAberto] = useState<number | null>(null)
+  const [formEnviado, setFormEnviado] = useState(false)
 
   return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-
-      {/* ========== HERO SECTION ========== */}
-      <section className="hero-gradient min-h-[70vh] flex items-center relative pt-32 pb-20">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-
-        <div className="container relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-white">
-              <nav className="flex items-center gap-2 text-sm mb-8 animate-fade-up">
-                <Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link>
-                <span className="text-white/50">/</span>
-                <span className="text-white">Jurídico</span>
-              </nav>
-
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5 mb-6 animate-fade-up">
-                <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                <span className="text-sm font-medium">Apoio Jurídico Especializado</span>
-              </div>
-
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-[1.1] animate-fade-up" style={{ animationDelay: '100ms' }}>
-                Assessoria <span className="text-gradient">Jurídica</span> para Médicos
-              </h1>
-
-              <p className="text-xl text-white/90 mb-8 leading-relaxed max-w-xl animate-fade-up" style={{ animationDelay: '200ms' }}>
-                Conte com apoio jurídico especializado nas áreas trabalhista, administrativa
-                e sindical. Defendemos seus direitos com experiência.
+    <main>
+      {/* HERO */}
+      <section className="hero-verde" style={{ minHeight: '65vh', paddingTop: '140px' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
+              <span className="etiqueta etiqueta-clara" style={{ marginBottom: '2rem', display: 'inline-flex' }}>⚖️ Apoio Especializado</span>
+              <h1 className="texto-claro" style={{ marginBottom: '1.5rem' }}>Apoio Jurídico <span className="texto-gradiente">Especializado</span></h1>
+              <p className="texto-claro-90" style={{ fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)', maxWidth: '700px', margin: '0 auto var(--space-xl)', lineHeight: 1.8 }}>
+                Assessoria jurídica completa para médicos nas áreas trabalhista, administrativa e sindical. Defesa dos seus direitos com profissionais experientes.
               </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '300ms' }}>
-                <a
-                  href="https://wa.me/5531997178316?text=Olá! Preciso de apoio jurídico do SINMEVACO."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-accent btn-xl"
-                >
-                  Solicitar Apoio Agora
-                </a>
-                <a href="#areas" className="btn btn-outline-white btn-xl">
-                  Ver Áreas de Atuação
-                </a>
+              <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="#formulario" className="botao botao-laranja botao-grande">Solicitar Atendimento<span style={{ marginLeft: '0.5rem' }}>→</span></a>
+                <a href="https://wa.me/5531997178316" target="_blank" rel="noopener noreferrer" className="botao botao-outline-claro botao-grande">Falar pelo WhatsApp</a>
               </div>
             </div>
-
-            <div className="relative hidden lg:block animate-fade-up" style={{ animationDelay: '300ms' }}>
-              <div className="relative">
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18ca7298052f138331.jpg"
-                    alt="Apoio Jurídico SINMEVACO"
-                    width={600}
-                    height={500}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-xl animate-float">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">⚖️</span>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-primary">32+</div>
-                      <div className="text-gray-600 text-sm">Anos defendendo médicos</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </AnimarAoScroll>
+        </div>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', width: '100%' }}>
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="var(--branco-soft)"/>
+          </svg>
         </div>
       </section>
 
-      {/* ========== ÁREAS DE ATUAÇÃO ========== */}
-      <section id="areas" className="section bg-white overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Especialidades</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Áreas de <span className="text-primary">Atuação</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Oferecemos apoio jurídico em todas as áreas relevantes para a carreira médica
-            </p>
-          </AnimatedSection>
-
-          <div className="grid lg:grid-cols-3 gap-8">
+      {/* ÁREAS DE ATUAÇÃO */}
+      <section className="secao" style={{ background: 'var(--branco-soft)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>📋 Áreas de Atuação</span>
+              <h2 className="texto-escuro">Em que podemos <span className="texto-gradiente">ajudar</span></h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
+          <div className="grade-3">
             {areasAtuacao.map((area, index) => (
-              <AnimatedSection key={index} delay={index * 100}>
-                <div className="card h-full group hover:border-primary/30 border-2 border-transparent">
-                  <div className="icon-box mb-6 group-hover:scale-110 transition-transform">
-                    <span className="text-4xl">{area.icon}</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                    {area.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6">{area.description}</p>
-                  <ul className="space-y-2">
-                    {area.items.map((item, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
-                        <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center">
-                          <svg className="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                          </svg>
-                        </div>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+              <AnimarAoScroll key={index} atraso={index * 0.15}>
+                <div className="card-novo" style={{ textAlign: 'center', padding: 'var(--space-xl)', height: '100%', borderTop: `4px solid ${area.cor}` }}>
+                  <div style={{ width: '80px', height: '80px', margin: '0 auto var(--space-lg)', background: `linear-gradient(145deg, ${area.cor}, ${area.cor}dd)`, borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.25rem', boxShadow: `0 8px 24px ${area.cor}40` }}>{area.icone}</div>
+                  <h3 style={{ color: 'var(--preto-soft)', fontSize: '1.375rem', marginBottom: '0.75rem' }}>{area.titulo}</h3>
+                  <p style={{ color: 'var(--cinza-500)', lineHeight: 1.8 }}>{area.descricao}</p>
                 </div>
-              </AnimatedSection>
+              </AnimarAoScroll>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ========== COMO FUNCIONA ========== */}
-      <section className="section bg-light overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Processo</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Como Funciona o <span className="text-primary">Apoio Jurídico</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Um processo simples e transparente para garantir seus direitos
-            </p>
-          </AnimatedSection>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {etapas.map((etapa, index) => (
-              <AnimatedSection key={index} delay={index * 100}>
-                <div className="relative">
-                  <div className="card h-full text-center group">
-                    <div className="text-5xl font-bold text-primary/20 mb-4 group-hover:text-primary/40 transition-colors">
-                      {etapa.numero}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{etapa.titulo}</h3>
-                    <p className="text-gray-600 text-sm">{etapa.descricao}</p>
-                  </div>
-                  {index < etapas.length - 1 && (
-                    <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 text-primary text-2xl">
-                      →
-                    </div>
-                  )}
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== ESTATÍSTICAS ========== */}
-      <section className="section bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white overflow-hidden relative">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 border-4 border-white rounded-full" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 border-4 border-white rounded-full" />
-        </div>
-
-        <div className="container relative z-10">
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { number: "500+", label: "Médicos atendidos" },
-              { number: "32+", label: "Anos de experiência" },
-              { number: "95%", label: "Taxa de sucesso" },
-              { number: "100%", label: "Comprometimento" }
-            ].map((stat, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className="stat-card h-full text-center">
-                  <div className="text-5xl font-extrabold mb-2">{stat.number}</div>
-                  <div className="text-white/80">{stat.label}</div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== QUANDO PROCURAR + FORMULÁRIO ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            <AnimatedSection>
-              <span className="section-badge">Orientação</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Quando Procurar <span className="text-primary">Apoio Jurídico?</span>
-              </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Situações em que o apoio jurídico especializado faz a diferença na sua carreira.
-              </p>
-
-              <div className="space-y-3">
-                {[
-                  "Demissão ou rescisão contratual",
-                  "Falta de pagamento de verbas trabalhistas",
-                  "Assédio moral ou sexual no trabalho",
-                  "Condições inadequadas de trabalho",
-                  "Problemas com concursos públicos",
-                  "Processos administrativos ou éticos",
-                  "Dúvidas sobre contratos de trabalho",
-                  "Negociações salariais coletivas"
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 rounded-xl bg-light hover:bg-primary/5 transition-colors">
-                    <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <span className="text-gray-700">{item}</span>
-                  </div>
-                ))}
+      {/* IMAGEM + COMO FUNCIONA */}
+      <section className="secao" style={{ background: 'var(--branco)' }}>
+        <div className="wrapper">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-3xl)', alignItems: 'center' }} className="grade-como-funciona">
+            <AnimarAoScroll classe="animar-esquerda">
+              <div style={{ position: 'relative', borderRadius: 'var(--radius-2xl)', overflow: 'hidden', boxShadow: 'var(--sombra-forte)' }}>
+                <Image src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18ca7298052f138331.jpg" alt="Apoio Jurídico SINMEVACO" width={600} height={400} style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', bottom: '1.5rem', left: '1.5rem', background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))', color: 'white', padding: '1rem 1.5rem', borderRadius: 'var(--radius-lg)', fontWeight: 700 }}>Apoio Gratuito para Associados</div>
               </div>
-            </AnimatedSection>
-
-            <AnimatedSection delay={200}>
-              <div className="bg-light rounded-3xl p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Solicite Apoio Jurídico</h3>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome completo *</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.nome}
-                      onChange={(e) => setFormData({...formData, nome: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                      placeholder="Seu nome"
-                    />
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
-                      <input
-                        type="tel"
-                        required
-                        value={formData.telefone}
-                        onChange={(e) => setFormData({...formData, telefone: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                        placeholder="(31) 99999-9999"
-                      />
+            </AnimarAoScroll>
+            <AnimarAoScroll classe="animar-direita" atraso={0.2}>
+              <div>
+                <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>🔄 Como Funciona</span>
+                <h2 className="texto-escuro" style={{ marginBottom: 'var(--space-lg)' }}>Processo <span className="texto-gradiente">Simples</span></h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                  {comoFunciona.map((passo, index) => (
+                    <div key={index} style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'flex-start' }}>
+                      <div style={{ width: '48px', height: '48px', background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '1rem', flexShrink: 0 }}>{passo.numero}</div>
+                      <div>
+                        <h4 style={{ color: 'var(--preto-soft)', marginBottom: '0.25rem' }}>{passo.titulo}</h4>
+                        <p style={{ color: 'var(--cinza-500)', fontSize: '0.9375rem' }}>{passo.descricao}</p>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail *</label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                        placeholder="seu@email.com"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Assunto *</label>
-                    <select
-                      required
-                      value={formData.assunto}
-                      onChange={(e) => setFormData({...formData, assunto: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white"
-                    >
-                      <option value="">Selecione o assunto</option>
-                      <option value="Trabalhista">Direito Trabalhista</option>
-                      <option value="Administrativo">Direito Administrativo</option>
-                      <option value="Sindical">Direito Sindical</option>
-                      <option value="Outro">Outro</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Descreva sua situação *</label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={formData.mensagem}
-                      onChange={(e) => setFormData({...formData, mensagem: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 transition-colors bg-white resize-none"
-                      placeholder="Conte-nos brevemente sobre sua situação..."
-                    />
-                  </div>
-                  <button type="submit" className="btn btn-primary btn-xl w-full">
-                    Enviar Solicitação
-                  </button>
-                  <p className="text-xs text-gray-500 text-center">
-                    Ao enviar, você será redirecionado para o WhatsApp.
-                  </p>
-                </form>
-              </div>
-            </AnimatedSection>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== FAQ ========== */}
-      <section className="section bg-light overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">FAQ</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Dúvidas sobre o <span className="text-primary">Apoio Jurídico</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Respondemos às perguntas mais frequentes sobre nossos serviços
-            </p>
-          </AnimatedSection>
-
-          <div className="max-w-3xl mx-auto">
-            {faqData.map((faq, i) => (
-              <AnimatedSection key={i} delay={i * 50}>
-                <div className={`faq-item ${openFaq === i ? 'active' : ''}`}>
-                  <div className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                    <h3>{faq.question}</h3>
-                    <span className="faq-toggle">+</span>
-                  </div>
-                  <div className="faq-answer">
-                    <div className="faq-answer-inner">
-                      <p>{faq.answer}</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              </AnimatedSection>
-            ))}
+              </div>
+            </AnimarAoScroll>
           </div>
         </div>
       </section>
 
-      {/* ========== CTA FINAL ========== */}
-      <section className="cta-section section text-white overflow-hidden">
-        <div className="container relative z-10">
-          <AnimatedSection className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Não Enfrente Essa Batalha Sozinho
-            </h2>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              O SINMEVACO está ao seu lado para defender seus direitos.
-              Entre em contato agora e tenha o suporte que você merece.
-            </p>
+      {/* FORMULÁRIO */}
+      <section id="formulario" className="secao bg-verde" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+            <AnimarAoScroll>
+              <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+                <span className="etiqueta etiqueta-clara" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>📞 Solicite Atendimento</span>
+                <h2 className="texto-claro">Entre em Contato</h2>
+              </div>
+            </AnimarAoScroll>
+            <AnimarAoScroll atraso={0.2}>
+              <div style={{ background: 'white', borderRadius: 'var(--radius-xl)', padding: 'var(--space-xl)', boxShadow: 'var(--sombra-forte)' }}>
+                {formEnviado ? (
+                  <div style={{ textAlign: 'center', padding: 'var(--space-xl)' }}>
+                    <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>✅</div>
+                    <h3 style={{ color: 'var(--verde-600)', marginBottom: '0.5rem' }}>Solicitação Enviada!</h3>
+                    <p style={{ color: 'var(--verde-500)' }}>Nossa equipe jurídica entrará em contato em breve.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={(e) => { e.preventDefault(); setFormEnviado(true); }}>
+                    <div className="form-grupo"><label className="form-label">Nome completo *</label><input type="text" className="form-input" placeholder="Dr. João Silva" required /></div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }} className="form-grid-2">
+                      <div className="form-grupo"><label className="form-label">E-mail *</label><input type="email" className="form-input" placeholder="seu@email.com" required /></div>
+                      <div className="form-grupo"><label className="form-label">WhatsApp *</label><input type="tel" className="form-input" placeholder="(31) 99999-9999" required /></div>
+                    </div>
+                    <div className="form-grupo"><label className="form-label">Tipo de demanda *</label><select className="form-input form-select" required><option value="">Selecione</option><option value="trabalhista">Trabalhista</option><option value="administrativa">Administrativa</option><option value="sindical">Sindical</option><option value="outra">Outra</option></select></div>
+                    <div className="form-grupo"><label className="form-label">Descreva sua situação *</label><textarea className="form-input form-textarea" placeholder="Conte-nos sobre sua demanda jurídica..." required></textarea></div>
+                    <button type="submit" className="botao botao-verde botao-grande" style={{ width: '100%' }}>Enviar Solicitação<span style={{ marginLeft: '0.5rem' }}>→</span></button>
+                  </form>
+                )}
+              </div>
+            </AnimarAoScroll>
+          </div>
+        </div>
+      </section>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="https://wa.me/5531997178316?text=Olá! Preciso de apoio jurídico do SINMEVACO."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-accent btn-xl"
-              >
-                Falar pelo WhatsApp
-              </a>
-              <Link href="/contato" className="btn btn-outline-white btn-xl">
-                Outras Formas de Contato
-              </Link>
+      {/* FAQ */}
+      <section className="secao" style={{ background: 'var(--cinza-50)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>❓ Dúvidas</span>
+              <h2 className="texto-escuro">Perguntas <span className="texto-gradiente">Frequentes</span></h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
             </div>
-          </AnimatedSection>
+          </AnimarAoScroll>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            {faqJuridico.map((item, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div className={`faq-item ${faqAberto === index ? 'active' : ''}`} style={{ marginBottom: 'var(--space-md)' }}>
+                  <div className="faq-question" onClick={() => setFaqAberto(faqAberto === index ? null : index)}>
+                    <h3>{item.pergunta}</h3>
+                    <div className="faq-toggle">+</div>
+                  </div>
+                  <div className="faq-answer"><div className="faq-answer-inner"><p>{item.resposta}</p></div></div>
+                </div>
+              </AnimarAoScroll>
+            ))}
+          </div>
         </div>
       </section>
-    </>
-  );
+
+      {/* CTA */}
+      <section className="secao cta-verde" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-3xl)' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+              <span className="etiqueta etiqueta-laranja" style={{ marginBottom: '2rem', display: 'inline-flex' }}>🤝 Faça Parte</span>
+              <h2 className="texto-claro" style={{ marginBottom: '1.5rem' }}>Ainda não é associado?</h2>
+              <p className="texto-claro-90" style={{ fontSize: '1.25rem', marginBottom: 'var(--space-xl)', lineHeight: 1.8 }}>Associe-se ao SINMEVACO e tenha acesso a apoio jurídico gratuito e muitos outros benefícios.</p>
+              <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/associe-se" className="botao botao-laranja botao-grande">Quero me Associar<span style={{ marginLeft: '0.5rem' }}>→</span></Link>
+                <Link href="/beneficios" className="botao botao-outline-claro botao-grande">Ver Benefícios</Link>
+              </div>
+            </div>
+          </AnimarAoScroll>
+        </div>
+      </section>
+
+      <a href="https://wa.me/5531997178316" target="_blank" rel="noopener noreferrer" className="whatsapp-flutuante" aria-label="WhatsApp">💬</a>
+
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          .grade-como-funciona { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .form-grid-2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </main>
+  )
 }

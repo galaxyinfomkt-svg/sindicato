@@ -1,508 +1,766 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
-// Hook para animações ao scroll
-function useScrollAnimation() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+// ============================================================
+// QUEM SOMOS - LAYOUT 100% NOVO - SINMEVACO
+// ============================================================
+
+// Componente de Animação ao Scroll
+function AnimarAoScroll({
+  children,
+  classe = 'animar-surgir',
+  atraso = 0
+}: {
+  children: React.ReactNode
+  classe?: string
+  atraso?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visivel, setVisivel] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true);
+          setVisivel(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+    )
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, isVisible };
-}
-
-// Componente de animação
-function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const { ref, isVisible } = useScrollAnimation();
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div
       ref={ref}
-      className={`animate-fade-up ${isVisible ? 'animate-visible' : ''} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={`${classe} ${visivel ? 'animado' : ''}`}
+      style={{ transitionDelay: `${atraso}s` }}
     >
       {children}
     </div>
-  );
+  )
 }
 
-// Schema BreadcrumbList
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://sinmevaco.com.br"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Quem Somos",
-      "item": "https://sinmevaco.com.br/quem-somos"
-    }
-  ]
-};
+// Valores do sindicato
+const valores = [
+  {
+    icone: '⚖️',
+    titulo: 'Ética Profissional',
+    descricao: 'Defendemos os mais altos padrões de conduta ética na prática médica e nas relações profissionais.'
+  },
+  {
+    icone: '🛡️',
+    titulo: 'Defesa Intransigente',
+    descricao: 'Lutamos incansavelmente pelos direitos trabalhistas, previdenciários e pela valorização da categoria.'
+  },
+  {
+    icone: '🤝',
+    titulo: 'União da Categoria',
+    descricao: 'Fortalecemos os laços entre os médicos do Vale do Aço, promovendo solidariedade e cooperação.'
+  },
+  {
+    icone: '📚',
+    titulo: 'Educação Continuada',
+    descricao: 'Investimos na formação e atualização profissional através de parcerias educacionais exclusivas.'
+  },
+  {
+    icone: '💡',
+    titulo: 'Inovação',
+    descricao: 'Buscamos soluções modernas para os desafios da profissão, sempre à frente das mudanças do setor.'
+  },
+  {
+    icone: '🌱',
+    titulo: 'Sustentabilidade',
+    descricao: 'Promovemos práticas sustentáveis e responsabilidade social em todas as nossas ações.'
+  }
+]
 
-export default function QuemSomos() {
+// Estatísticas
+const estatisticas = [
+  { numero: '32+', label: 'Anos de História' },
+  { numero: '100%', label: 'Compromisso' },
+  { numero: '3', label: 'Cidades Atendidas' },
+  { numero: '24h', label: 'Suporte Jurídico' }
+]
+
+// Áreas de atuação
+const areasAtuacao = [
+  {
+    titulo: 'Negociação Coletiva',
+    descricao: 'Representamos a categoria nas negociações com hospitais, clínicas e órgãos públicos.',
+    icone: '📋'
+  },
+  {
+    titulo: 'Apoio Jurídico',
+    descricao: 'Assessoria jurídica especializada em direito trabalhista, administrativo e sindical.',
+    icone: '⚖️'
+  },
+  {
+    titulo: 'Defesa Profissional',
+    descricao: 'Acompanhamento em processos éticos e defesa perante conselhos e instituições.',
+    icone: '🛡️'
+  },
+  {
+    titulo: 'Benefícios Exclusivos',
+    descricao: 'Parcerias que proporcionam economia em educação, saúde, energia e muito mais.',
+    icone: '🎁'
+  }
+]
+
+export default function QuemSomosPage() {
   return (
-    <>
-      {/* Schema BreadcrumbList */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-
+    <main>
       {/* ========== HERO SECTION ========== */}
-      <section className="hero-gradient min-h-[60vh] flex items-center relative pt-32 pb-20">
-        {/* Decorative Elements */}
-        <div className="absolute top-20 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+      <section className="hero-verde" style={{ minHeight: '70vh', paddingTop: '140px' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: 'var(--space-3xl)',
+            alignItems: 'center'
+          }} className="hero-grid">
 
-        <div className="container relative z-10">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            {/* Breadcrumb */}
-            <nav className="flex items-center justify-center gap-2 text-sm mb-8 animate-fade-up">
-              <Link href="/" className="text-white/70 hover:text-white transition-colors">Home</Link>
-              <span className="text-white/50">/</span>
-              <span className="text-white">Quem Somos</span>
-            </nav>
+            <AnimarAoScroll>
+              <div style={{ textAlign: 'center' }}>
+                <span className="etiqueta etiqueta-clara" style={{ marginBottom: '2rem', display: 'inline-flex' }}>
+                  🏛️ Nossa História
+                </span>
 
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2.5 mb-6 animate-fade-up">
-              <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-              <span className="text-sm font-medium">Conheça nossa história</span>
-            </div>
+                <h1 className="texto-claro" style={{ marginBottom: '1.5rem' }}>
+                  Mais de <span className="texto-gradiente">32 Anos</span> Defendendo
+                  <br />os Médicos do Vale do Aço
+                </h1>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-[1.1] animate-fade-up" style={{ animationDelay: '100ms' }}>
-              Quem Somos
-            </h1>
+                <p className="texto-claro-90" style={{
+                  fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)',
+                  maxWidth: '750px',
+                  margin: '0 auto var(--space-xl)',
+                  lineHeight: 1.8
+                }}>
+                  Desde 1992, o SINMEVACO trabalha incansavelmente pela valorização
+                  profissional, condições dignas de trabalho e defesa dos direitos
+                  dos médicos de Ipatinga, Timóteo, Coronel Fabriciano e região.
+                </p>
 
-            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: '200ms' }}>
-              Há mais de <strong>32 anos</strong> representando, defendendo e fortalecendo
-              a classe médica no Vale do Aço.
-            </p>
+                <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Link href="/diretoria" className="botao botao-branco">
+                    Conheça a Diretoria
+                    <span style={{ marginLeft: '0.5rem' }}>→</span>
+                  </Link>
+                  <Link href="/associe-se" className="botao botao-laranja">
+                    Associe-se Agora
+                  </Link>
+                </div>
+              </div>
+            </AnimarAoScroll>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        {/* Onda decorativa */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', width: '100%' }}>
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="var(--branco-soft)"/>
           </svg>
         </div>
       </section>
 
-      {/* ========== HISTÓRIA DO SINDICATO ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <AnimatedSection>
-              <span className="section-badge">Nossa Trajetória</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Nossa <span className="text-primary">História</span>
-              </h2>
-
-              <div className="space-y-5 text-lg text-gray-600 leading-relaxed">
-                <p>
-                  <strong className="text-primary">O SINMEVACO – Sindicato dos Médicos do Vale do Aço</strong> foi
-                  fundado com o propósito fundamental de representar, defender e promover os interesses
-                  da classe médica na região, abrangendo Ipatinga, Timóteo, Coronel Fabriciano e cidades circunvizinhas.
-                </p>
-
-                <p>
-                  Ao longo de <strong className="text-primary">mais de 32 anos de existência</strong>, o SINMEVACO
-                  consolidou-se como uma instituição de referência na defesa dos direitos trabalhistas,
-                  da valorização profissional e das condições dignas de trabalho dos médicos.
-                </p>
-
-                <p>
-                  Nossa atuação é pautada pela <strong className="text-primary">ética, transparência e
-                  independência sindical</strong>, sempre priorizando o bem-estar da categoria e a qualidade
-                  da assistência médica prestada à população do Vale do Aço.
-                </p>
-              </div>
-            </AnimatedSection>
-
-            <AnimatedSection delay={200}>
-              <div className="relative">
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18f4c8e921e65a0a1c.jpg"
-                    alt="SINMEVACO - Participação em eventos e debates"
-                    width={600}
-                    height={450}
-                    className="w-full h-auto object-cover"
-                  />
+      {/* ========== ESTATÍSTICAS ========== */}
+      <section style={{
+        background: 'var(--branco-soft)',
+        paddingTop: 'var(--space-2xl)',
+        paddingBottom: 'var(--space-3xl)'
+      }}>
+        <div className="wrapper">
+          <div className="grade-4">
+            {estatisticas.map((stat, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div className="stat-card">
+                  <div className="stat-numero">{stat.numero}</div>
+                  <div className="stat-label">{stat.label}</div>
                 </div>
-
-                {/* Stats Overlay */}
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-xl animate-float">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">🏛️</span>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-primary">32+</div>
-                      <div className="text-gray-600 text-sm">Anos de história</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Decorative */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-xl" />
-              </div>
-            </AnimatedSection>
-          </div>
-
-          {/* Stats Section */}
-          <div className="grid md:grid-cols-4 gap-6 mt-20">
-            {[
-              { number: "32+", label: "Anos de Atuação", icon: "🏆" },
-              { number: "100%", label: "Compromisso", icon: "💯" },
-              { number: "3", label: "Cidades Principais", icon: "📍" },
-              { number: "∞", label: "Dedicação", icon: "💚" }
-            ].map((stat, i) => (
-              <AnimatedSection key={i} delay={i * 100}>
-                <div className="stat-card h-full group">
-                  <span className="text-4xl mb-3 block group-hover:scale-110 transition-transform">{stat.icon}</span>
-                  <div className="text-4xl font-extrabold mb-2">{stat.number}</div>
-                  <div className="text-white/80">{stat.label}</div>
-                </div>
-              </AnimatedSection>
+              </AnimarAoScroll>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ========== MISSÃO, VISÃO E VALORES ========== */}
-      <section className="section bg-light overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Nossos Princípios</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Missão, Visão e <span className="text-primary">Valores</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Os pilares que guiam nossa atuação em defesa da classe médica
-            </p>
-          </AnimatedSection>
+      {/* ========== NOSSA HISTÓRIA ========== */}
+      <section className="secao" style={{ background: 'var(--branco)' }}>
+        <div className="wrapper">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: 'var(--space-3xl)',
+            alignItems: 'center'
+          }} className="grade-historia">
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <AnimatedSection delay={0}>
-              <div className="card h-full text-center group hover:border-primary/30 border-2 border-transparent">
-                <div className="icon-box mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">🎯</span>
+            <AnimarAoScroll classe="animar-esquerda">
+              <div style={{
+                position: 'relative',
+                borderRadius: 'var(--radius-2xl)',
+                overflow: 'hidden',
+                boxShadow: 'var(--sombra-forte)'
+              }}>
+                <Image
+                  src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18f4c8e921e65a0a1c.jpg"
+                  alt="Eventos do SINMEVACO"
+                  width={600}
+                  height={450}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    objectFit: 'cover'
+                  }}
+                />
+
+                {/* Badge flutuante */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  left: '1.5rem',
+                  background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))',
+                  color: 'white',
+                  padding: '1rem 1.5rem',
+                  borderRadius: 'var(--radius-lg)',
+                  fontWeight: 700,
+                  boxShadow: 'var(--sombra-media)'
+                }}>
+                  Desde 1992
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                  Missão
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Defender os direitos, a valorização profissional e as condições dignas de trabalho
-                  dos médicos do Vale do Aço, promovendo a representatividade sindical ética e
-                  comprometida com o bem-estar da categoria e da sociedade.
+              </div>
+            </AnimarAoScroll>
+
+            <AnimarAoScroll classe="animar-direita" atraso={0.2}>
+              <div>
+                <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                  📖 Nossa Trajetória
+                </span>
+
+                <h2 className="texto-escuro" style={{ marginBottom: '1.5rem' }}>
+                  Uma história de <span className="texto-gradiente">luta e conquistas</span>
+                </h2>
+
+                <p style={{
+                  color: 'var(--cinza-500)',
+                  marginBottom: 'var(--space-md)',
+                  lineHeight: 1.9
+                }}>
+                  O <strong>SINMEVACO</strong> nasceu da necessidade de unir os médicos do Vale do Aço
+                  em torno de causas comuns: melhores condições de trabalho, remuneração justa
+                  e respeito à dignidade profissional.
                 </p>
-              </div>
-            </AnimatedSection>
 
-            <AnimatedSection delay={100}>
-              <div className="card h-full text-center group hover:border-primary/30 border-2 border-transparent">
-                <div className="icon-box mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">🏆</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                  Visão
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Ser referência sindical na defesa da classe médica em Minas Gerais, reconhecido
-                  pela excelência na representação, pela transparência na gestão e pelo compromisso
-                  inabalável com os interesses dos médicos.
+                <p style={{
+                  color: 'var(--cinza-500)',
+                  marginBottom: 'var(--space-lg)',
+                  lineHeight: 1.9
+                }}>
+                  Ao longo de mais de três décadas, conquistamos vitórias importantes nas negociações
+                  coletivas, ampliamos os benefícios para os associados e nos consolidamos como
+                  referência na defesa dos direitos médicos na região.
                 </p>
-              </div>
-            </AnimatedSection>
 
-            <AnimatedSection delay={200}>
-              <div className="card h-full text-center group hover:border-primary/30 border-2 border-transparent">
-                <div className="icon-box mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <span className="text-3xl">⚖️</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                  Valores
-                </h3>
-                <div className="space-y-3 text-left">
-                  {[
-                    'Ética e integridade profissional',
-                    'Transparência na gestão sindical',
-                    'Compromisso com a categoria',
-                    'Responsabilidade social',
-                    'Independência sindical'
-                  ].map((valor, index) => (
-                    <div key={index} className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/5 transition-colors">
-                      <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 text-sm">{valor}</span>
-                    </div>
-                  ))}
+                <div style={{
+                  display: 'flex',
+                  gap: 'var(--space-lg)',
+                  flexWrap: 'wrap'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      background: 'var(--cinza-50)',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem'
+                    }}>✅</div>
+                    <span style={{ color: 'var(--cinza-700)', fontWeight: 500 }}>
+                      Negociações<br />Coletivas
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      background: 'var(--cinza-50)',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem'
+                    }}>✅</div>
+                    <span style={{ color: 'var(--cinza-700)', fontWeight: 500 }}>
+                      Apoio<br />Jurídico
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      background: 'var(--cinza-50)',
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem'
+                    }}>✅</div>
+                    <span style={{ color: 'var(--cinza-700)', fontWeight: 500 }}>
+                      Benefícios<br />Exclusivos
+                    </span>
+                  </div>
                 </div>
               </div>
-            </AnimatedSection>
+            </AnimarAoScroll>
           </div>
         </div>
       </section>
 
-      {/* ========== ATUAÇÃO SINDICAL ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">O Que Fazemos</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Nossa <span className="text-primary">Atuação Sindical</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Como o SINMEVACO atua na defesa dos interesses da categoria médica
-            </p>
-          </AnimatedSection>
+      {/* ========== MISSÃO, VISÃO, VALORES ========== */}
+      <section className="secao bg-verde" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Padrão decorativo */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '50%',
+          height: '100%',
+          background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%)',
+          pointerEvents: 'none'
+        }}></div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: '⚖️', title: 'Defesa Trabalhista', desc: 'Atuação em questões trabalhistas, garantindo o cumprimento dos direitos dos médicos e condições justas de trabalho.' },
-              { icon: '🏢', title: 'Representação Administrativa', desc: 'Intermediação entre médicos e instituições de saúde, defendendo os interesses da categoria em âmbito administrativo.' },
-              { icon: '🤝', title: 'Negociações Coletivas', desc: 'Condução de negociações com empregadores e gestores para garantir melhores condições de trabalho e remuneração.' },
-              { icon: '🛡️', title: 'Apoio Jurídico', desc: 'Assessoria jurídica completa através de parceria com escritórios especializados em direito médico.' },
-              { icon: '💬', title: 'Mediação de Conflitos', desc: 'Intermediação em situações de conflito entre médicos e instituições, buscando soluções justas e equilibradas.' },
-              { icon: '📢', title: 'Representação Institucional', desc: 'Participação ativa em debates, fóruns e instâncias decisórias sobre políticas de saúde na região.' }
-            ].map((item, index) => (
-              <AnimatedSection key={index} delay={index * 100}>
-                <div className="group p-6 bg-light rounded-2xl border-l-4 border-primary hover:shadow-xl transition-all duration-300 h-full">
-                  <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-2xl">{item.icon}</span>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta etiqueta-clara" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                🎯 Propósito
+              </span>
+              <h2 className="texto-claro" style={{ marginBottom: '1rem' }}>
+                Missão, Visão e Valores
+              </h2>
+              <div className="divisor divisor-claro"></div>
+            </div>
+          </AnimarAoScroll>
+
+          <div className="grade-3">
+            <AnimarAoScroll atraso={0.1}>
+              <div className="card-glass" style={{ height: '100%' }}>
+                <div style={{
+                  fontSize: '3rem',
+                  marginBottom: 'var(--space-md)',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+                }}>🎯</div>
+                <h3 className="texto-claro" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+                  Missão
+                </h3>
+                <p className="texto-claro-80" style={{ lineHeight: 1.8 }}>
+                  Defender intransigentemente os direitos dos médicos do Vale do Aço,
+                  promovendo condições dignas de trabalho, valorização profissional
+                  e o bem-estar da categoria.
+                </p>
+              </div>
+            </AnimarAoScroll>
+
+            <AnimarAoScroll atraso={0.2}>
+              <div className="card-glass" style={{ height: '100%' }}>
+                <div style={{
+                  fontSize: '3rem',
+                  marginBottom: 'var(--space-md)',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+                }}>👁️</div>
+                <h3 className="texto-claro" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+                  Visão
+                </h3>
+                <p className="texto-claro-80" style={{ lineHeight: 1.8 }}>
+                  Ser referência nacional em representação sindical médica,
+                  reconhecido pela excelência no atendimento, inovação nas soluções
+                  e efetividade na defesa dos associados.
+                </p>
+              </div>
+            </AnimarAoScroll>
+
+            <AnimarAoScroll atraso={0.3}>
+              <div className="card-glass" style={{ height: '100%' }}>
+                <div style={{
+                  fontSize: '3rem',
+                  marginBottom: 'var(--space-md)',
+                  filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))'
+                }}>💎</div>
+                <h3 className="texto-claro" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+                  Valores
+                </h3>
+                <p className="texto-claro-80" style={{ lineHeight: 1.8 }}>
+                  Ética, transparência, compromisso com a verdade,
+                  respeito à dignidade humana, solidariedade entre colegas
+                  e excelência em tudo que fazemos.
+                </p>
+              </div>
+            </AnimarAoScroll>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== NOSSOS VALORES ========== */}
+      <section className="secao" style={{ background: 'var(--cinza-50)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                💪 O Que Nos Move
+              </span>
+              <h2 className="texto-escuro">
+                Princípios que <span className="texto-gradiente">nos guiam</span>
+              </h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
+
+          <div className="grade-3">
+            {valores.map((valor, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div className="card-novo" style={{
+                  height: '100%',
+                  textAlign: 'center',
+                  padding: 'var(--space-xl)'
+                }}>
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    margin: '0 auto var(--space-lg)',
+                    background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))',
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '2.25rem',
+                    boxShadow: '0 8px 24px rgba(23, 93, 59, 0.25)',
+                    transition: 'transform 0.3s ease'
+                  }}>
+                    {valor.icone}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                    {item.title}
+
+                  <h3 style={{
+                    color: 'var(--preto-soft)',
+                    fontSize: '1.25rem',
+                    marginBottom: '0.75rem'
+                  }}>
+                    {valor.titulo}
                   </h3>
-                  <p className="text-gray-600">{item.desc}</p>
+
+                  <p style={{
+                    color: 'var(--cinza-500)',
+                    lineHeight: 1.8,
+                    fontSize: '0.9375rem'
+                  }}>
+                    {valor.descricao}
+                  </p>
                 </div>
-              </AnimatedSection>
+              </AnimarAoScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== ÁREAS DE ATUAÇÃO ========== */}
+      <section className="secao" style={{ background: 'var(--branco)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                🎯 Atuação Sindical
+              </span>
+              <h2 className="texto-escuro">
+                Como trabalhamos <span className="texto-gradiente">por você</span>
+              </h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
+
+          <div className="grade-2">
+            {areasAtuacao.map((area, index) => (
+              <AnimarAoScroll key={index} atraso={index * 0.1}>
+                <div className="card-novo card-borda-esquerda" style={{
+                  display: 'flex',
+                  gap: 'var(--space-lg)',
+                  alignItems: 'flex-start',
+                  padding: 'var(--space-xl)'
+                }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))',
+                    borderRadius: 'var(--radius-md)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.75rem',
+                    flexShrink: 0,
+                    boxShadow: '0 6px 20px rgba(23, 93, 59, 0.2)'
+                  }}>
+                    {area.icone}
+                  </div>
+
+                  <div>
+                    <h3 style={{
+                      color: 'var(--preto-soft)',
+                      fontSize: '1.25rem',
+                      marginBottom: '0.5rem'
+                    }}>
+                      {area.titulo}
+                    </h3>
+                    <p style={{
+                      color: 'var(--cinza-500)',
+                      lineHeight: 1.8
+                    }}>
+                      {area.descricao}
+                    </p>
+                  </div>
+                </div>
+              </AnimarAoScroll>
             ))}
           </div>
         </div>
       </section>
 
       {/* ========== PRESIDENTE ========== */}
-      <section className="section bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white overflow-hidden relative">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-40 h-40 border-4 border-white rounded-full" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 border-4 border-white rounded-full" />
-        </div>
+      <section className="secao" style={{ background: 'var(--cinza-50)' }}>
+        <div className="wrapper">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: 'var(--space-3xl)',
+            alignItems: 'center'
+          }} className="grade-presidente">
 
-        <div className="container relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <AnimatedSection>
-              <div className="relative">
-                <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20">
+            <AnimarAoScroll classe="animar-esquerda">
+              <div style={{
+                position: 'relative',
+                maxWidth: '400px',
+                margin: '0 auto'
+              }}>
+                {/* Moldura decorativa */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-15px',
+                  left: '-15px',
+                  right: '15px',
+                  bottom: '15px',
+                  border: '4px solid var(--verde-400)',
+                  borderRadius: 'var(--radius-2xl)',
+                  zIndex: 0
+                }}></div>
+
+                <div style={{
+                  position: 'relative',
+                  borderRadius: 'var(--radius-2xl)',
+                  overflow: 'hidden',
+                  boxShadow: 'var(--sombra-forte)',
+                  zIndex: 1
+                }}>
                   <Image
                     src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f1896e3f2127ce231c4.jpg"
                     alt="Dr. Carlos Henrique Quintão Valeriano - Presidente do SINMEVACO"
-                    width={600}
-                    height={700}
-                    className="w-full h-auto object-cover"
+                    width={400}
+                    height={500}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      objectFit: 'cover'
+                    }}
                   />
                 </div>
-
-                {/* Badge Presidente */}
-                <div className="absolute -bottom-6 left-6 right-6 bg-white text-primary rounded-2xl p-5 shadow-xl">
-                  <div className="text-center">
-                    <div className="font-bold text-lg">Presidente do SINMEVACO</div>
-                    <div className="text-gray-600 text-sm">Gestão comprometida com você</div>
-                  </div>
-                </div>
               </div>
-            </AnimatedSection>
+            </AnimarAoScroll>
 
-            <AnimatedSection delay={200}>
-              <span className="inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold mb-6">
-                Liderança
-              </span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                Dr. Carlos Henrique<br />
-                Quintão Valeriano
-              </h2>
+            <AnimarAoScroll classe="animar-direita" atraso={0.2}>
+              <div>
+                <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                  👨‍⚕️ Liderança
+                </span>
 
-              <p className="text-lg text-white/90 mb-6 leading-relaxed">
-                O Dr. Carlos Henrique Quintão Valeriano assume a presidência do SINMEVACO com o
-                firme compromisso de fortalecer a representatividade da classe médica no Vale do Aço.
-              </p>
+                <h2 className="texto-escuro" style={{ marginBottom: '0.5rem' }}>
+                  Dr. Carlos Henrique
+                </h2>
+                <h3 style={{
+                  color: 'var(--verde-500)',
+                  fontSize: '1.25rem',
+                  fontWeight: 500,
+                  marginBottom: 'var(--space-lg)'
+                }}>
+                  Quintão Valeriano
+                </h3>
 
-              <p className="text-lg text-white/90 mb-8 leading-relaxed">
-                Sua gestão é pautada pela <strong>ética, transparência e defesa intransigente</strong> dos
-                direitos dos médicos, sempre priorizando o diálogo, a negociação e a busca por
-                condições dignas de trabalho para todos os profissionais da região.
-              </p>
-
-              <blockquote className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border-l-4 border-accent">
-                <p className="text-white/95 italic mb-3">
-                  &ldquo;Nosso compromisso é com a valorização da profissão médica, a defesa dos nossos
-                  direitos e o fortalecimento da categoria. Juntos, construímos um sindicato forte
-                  e representativo.&rdquo;
+                <p style={{
+                  fontSize: '1.125rem',
+                  color: 'var(--cinza-700)',
+                  fontWeight: 500,
+                  marginBottom: 'var(--space-md)'
+                }}>
+                  Presidente do SINMEVACO
                 </p>
-                <cite className="text-accent font-semibold not-italic">
-                  — Dr. Carlos Henrique Quintão Valeriano
-                </cite>
-              </blockquote>
-            </AnimatedSection>
+
+                <p style={{
+                  color: 'var(--cinza-500)',
+                  marginBottom: 'var(--space-lg)',
+                  lineHeight: 1.9
+                }}>
+                  À frente do sindicato, Dr. Carlos Henrique lidera com dedicação e
+                  compromisso a luta pelos direitos dos médicos do Vale do Aço.
+                  Sua gestão é marcada pela transparência, proximidade com os associados
+                  e busca constante por melhores condições para a categoria.
+                </p>
+
+                <blockquote style={{
+                  background: 'var(--branco)',
+                  borderLeft: '4px solid var(--verde-500)',
+                  padding: 'var(--space-lg)',
+                  borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
+                  fontStyle: 'italic',
+                  color: 'var(--cinza-700)',
+                  lineHeight: 1.8,
+                  marginBottom: 'var(--space-lg)'
+                }}>
+                  &ldquo;Nosso compromisso é defender cada médico, em cada batalha,
+                  para que a profissão seja exercida com dignidade e respeito.&rdquo;
+                </blockquote>
+
+                <Link href="/diretoria" className="botao botao-verde">
+                  Conheça Toda a Diretoria
+                  <span style={{ marginLeft: '0.5rem' }}>→</span>
+                </Link>
+              </div>
+            </AnimarAoScroll>
           </div>
         </div>
       </section>
 
-      {/* ========== APOIO JURÍDICO ========== */}
-      <section className="section bg-white overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <AnimatedSection>
-              <span className="section-badge">Apoio Jurídico</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Assessoria Jurídica <span className="text-primary">Especializada</span>
+      {/* ========== REGIÃO DE ATUAÇÃO ========== */}
+      <section className="secao" style={{ background: 'var(--branco)' }}>
+        <div className="wrapper">
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', marginBottom: 'var(--space-3xl)' }}>
+              <span className="etiqueta" style={{ marginBottom: '1.5rem', display: 'inline-flex' }}>
+                📍 Onde Atuamos
+              </span>
+              <h2 className="texto-escuro">
+                Região do <span className="texto-gradiente">Vale do Aço</span>
               </h2>
+              <div className="divisor" style={{ marginTop: '1.5rem' }}></div>
+            </div>
+          </AnimarAoScroll>
 
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                O SINMEVACO mantém parcerias estratégicas com escritórios de advocacia especializados
-                em direito médico, trabalhista e sindical, garantindo atendimento jurídico de
-                excelência aos médicos sindicalizados.
-              </p>
+          <div className="grade-3">
+            {['Ipatinga', 'Timóteo', 'Coronel Fabriciano'].map((cidade, index) => (
+              <AnimarAoScroll key={cidade} atraso={index * 0.15}>
+                <div style={{
+                  background: 'linear-gradient(145deg, var(--verde-500), var(--verde-400))',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 'var(--space-xl)',
+                  textAlign: 'center',
+                  color: 'white',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '-30%',
+                    right: '-20%',
+                    width: '150px',
+                    height: '150px',
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: '50%'
+                  }}></div>
 
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Nossa atuação jurídica é <strong className="text-primary">preventiva e corretiva</strong>,
-                abrangendo desde orientações sobre contratos de trabalho até a defesa em processos
-                administrativos e judiciais.
-              </p>
-
-              <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                {[
-                  { icon: '📋', title: 'Direito Trabalhista' },
-                  { icon: '🏢', title: 'Direito Administrativo' },
-                  { icon: '⚖️', title: 'Direito Sindical' },
-                  { icon: '🛡️', title: 'Defesa Institucional' }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-light rounded-xl hover:bg-primary/5 transition-colors">
-                    <span className="text-2xl">{item.icon}</span>
-                    <span className="font-semibold text-gray-900">{item.title}</span>
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>📍</div>
+                    <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{cidade}</h3>
+                    <p style={{ opacity: 0.9, marginTop: '0.5rem' }}>Minas Gerais</p>
                   </div>
-                ))}
-              </div>
-
-              <Link href="/juridico" className="btn btn-primary">
-                Solicitar Apoio Jurídico
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-            </AnimatedSection>
-
-            <AnimatedSection delay={200}>
-              <div className="relative">
-                <div className="rounded-3xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18ca7298052f138331.jpg"
-                    alt="Equipe jurídica SINMEVACO"
-                    width={600}
-                    height={450}
-                    className="w-full h-auto object-cover"
-                  />
                 </div>
-
-                {/* Stats Overlay */}
-                <div className="absolute -bottom-6 -right-6 bg-primary text-white rounded-2xl p-6 shadow-xl">
-                  <div className="text-4xl font-bold mb-1">95%</div>
-                  <div className="text-sm text-white/80">Taxa de sucesso</div>
-                </div>
-
-                <div className="absolute -top-4 -left-4 w-24 h-24 bg-accent/20 rounded-full blur-xl" />
-              </div>
-            </AnimatedSection>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== ÁREA DE ATUAÇÃO ========== */}
-      <section className="section bg-light overflow-hidden">
-        <div className="container">
-          <AnimatedSection className="text-center mb-16">
-            <span className="section-badge">Cobertura Regional</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Nossa <span className="text-primary">Área de Atuação</span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Presença consolidada nas principais cidades do Vale do Aço
-            </p>
-          </AnimatedSection>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { city: 'Ipatinga', icon: '🏙️', desc: 'Sede principal' },
-              { city: 'Timóteo', icon: '🌆', desc: 'Atendimento completo' },
-              { city: 'Coronel Fabriciano', icon: '🏛️', desc: 'Suporte integral' },
-              { city: 'Vale do Aço', icon: '📍', desc: 'Região completa' }
-            ].map((item, index) => (
-              <AnimatedSection key={index} delay={index * 100}>
-                <div className="stat-card h-full group cursor-pointer">
-                  <span className="text-5xl mb-4 block group-hover:scale-110 transition-transform">{item.icon}</span>
-                  <h3 className="text-2xl font-bold mb-2">{item.city}</h3>
-                  <p className="text-white/80">{item.desc}</p>
-                </div>
-              </AnimatedSection>
+              </AnimarAoScroll>
             ))}
           </div>
+
+          <AnimarAoScroll atraso={0.4}>
+            <p style={{
+              textAlign: 'center',
+              color: 'var(--cinza-500)',
+              marginTop: 'var(--space-xl)',
+              maxWidth: '700px',
+              margin: 'var(--space-xl) auto 0',
+              lineHeight: 1.8
+            }}>
+              Nossa atuação abrange toda a região metropolitana do Vale do Aço,
+              atendendo médicos que atuam em hospitais, clínicas, UBS e demais
+              estabelecimentos de saúde.
+            </p>
+          </AnimarAoScroll>
         </div>
       </section>
 
       {/* ========== CTA FINAL ========== */}
-      <section className="cta-section section text-white overflow-hidden">
-        <div className="container relative z-10">
-          <AnimatedSection className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Fortaleça a sua profissão
-            </h2>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              Junte-se aos médicos que defendem seus direitos, valorizam sua profissão
-              e constroem uma classe médica mais forte no Vale do Aço.
-            </p>
+      <section className="secao cta-verde" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-3xl)' }}>
+        <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
+          <AnimarAoScroll>
+            <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+              <span className="etiqueta etiqueta-laranja" style={{ marginBottom: '2rem', display: 'inline-flex' }}>
+                🤝 Faça Parte
+              </span>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/associe-se" className="btn btn-accent btn-xl">
-                Associe-se Agora
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link href="/contato" className="btn btn-outline-white btn-xl">
-                Fale com o Sindicato
-              </Link>
+              <h2 className="texto-claro" style={{ marginBottom: '1.5rem' }}>
+                Junte-se a nós nessa luta
+              </h2>
+
+              <p className="texto-claro-90" style={{
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-xl)',
+                lineHeight: 1.8
+              }}>
+                Seja parte do sindicato que há mais de 32 anos defende
+                os interesses dos médicos do Vale do Aço com dedicação e resultados.
+              </p>
+
+              <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/associe-se" className="botao botao-laranja botao-grande">
+                  Quero me Associar
+                  <span style={{ marginLeft: '0.5rem' }}>→</span>
+                </Link>
+                <Link href="/contato" className="botao botao-outline-claro botao-grande">
+                  Fale Conosco
+                </Link>
+              </div>
             </div>
-          </AnimatedSection>
+          </AnimarAoScroll>
         </div>
       </section>
-    </>
-  );
+
+      {/* ========== WHATSAPP FLUTUANTE ========== */}
+      <a
+        href="https://wa.me/5531997178316"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-flutuante"
+        aria-label="Fale conosco pelo WhatsApp"
+      >
+        💬
+      </a>
+
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          .grade-historia,
+          .grade-presidente {
+            grid-template-columns: 1fr 1.2fr !important;
+          }
+        }
+      `}</style>
+    </main>
+  )
 }
