@@ -161,7 +161,10 @@ export default function DiretoriaPage() {
                   overflow: 'hidden',
                   boxShadow: 'var(--sombra-forte)',
                   zIndex: 1,
-                  border: '6px solid white'
+                  border: '6px solid white',
+                  width: '280px',
+                  height: '280px',
+                  margin: '0 auto'
                 }}>
                   <Image
                     src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f1896e3f2127ce231c4.jpg"
@@ -170,9 +173,9 @@ export default function DiretoriaPage() {
                     height={380}
                     style={{
                       width: '100%',
-                      height: 'auto',
+                      height: '100%',
                       objectFit: 'cover',
-                      aspectRatio: '1/1'
+                      objectPosition: 'center 15%'
                     }}
                   />
                 </div>

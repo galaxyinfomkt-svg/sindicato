@@ -37,30 +37,13 @@ export default function Header() {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
     } else {
-      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
     }
     return () => {
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
     };
   }, [isMobileMenuOpen]);
-
-  const toggleMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
 
   return (
     <>
@@ -84,16 +67,16 @@ export default function Header() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          height: '70px'
+          height: '60px'
         }} className="header-container">
           {/* Logo */}
           <Link href="/" aria-label="SINMEVACO - Página Inicial" style={{ zIndex: 1003 }}>
             <Image
               src="/images/logo.png"
               alt="SINMEVACO"
-              width={150}
-              height={50}
-              style={{ height: 'auto', width: 'auto', maxHeight: '45px' }}
+              width={120}
+              height={40}
+              style={{ height: 'auto', width: 'auto', maxHeight: '38px' }}
               priority
               className="header-logo"
             />
@@ -140,58 +123,40 @@ export default function Header() {
             </ul>
           </nav>
 
-          {/* Toggle Mobile - Hamburger */}
+          {/* Toggle Mobile - Hamburger/X */}
           <button
-            onClick={toggleMenu}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="menu-toggle-mobile"
             aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isMobileMenuOpen}
             style={{
               display: 'none',
-              flexDirection: 'column',
-              justifyContent: 'center',
               alignItems: 'center',
-              gap: '5px',
+              justifyContent: 'center',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              padding: '12px',
+              padding: '8px',
               zIndex: 1003,
-              width: '48px',
-              height: '48px',
+              width: '44px',
+              height: '44px',
               position: 'relative'
             }}
           >
-            <span style={{
-              display: 'block',
-              width: '24px',
-              height: '2px',
-              background: isScrolled || isMobileMenuOpen ? 'var(--verde-500)' : 'white',
-              borderRadius: '2px',
-              transition: 'all 0.3s ease',
-              transformOrigin: 'center',
-              transform: isMobileMenuOpen ? 'rotate(45deg) translateY(5px)' : 'none'
-            }}></span>
-            <span style={{
-              display: 'block',
-              width: '24px',
-              height: '2px',
-              background: isScrolled || isMobileMenuOpen ? 'var(--verde-500)' : 'white',
-              borderRadius: '2px',
-              transition: 'all 0.3s ease',
-              opacity: isMobileMenuOpen ? 0 : 1,
-              transform: isMobileMenuOpen ? 'scaleX(0)' : 'scaleX(1)'
-            }}></span>
-            <span style={{
-              display: 'block',
-              width: '24px',
-              height: '2px',
-              background: isScrolled || isMobileMenuOpen ? 'var(--verde-500)' : 'white',
-              borderRadius: '2px',
-              transition: 'all 0.3s ease',
-              transformOrigin: 'center',
-              transform: isMobileMenuOpen ? 'rotate(-45deg) translateY(-5px)' : 'none'
-            }}></span>
+            {isMobileMenuOpen ? (
+              /* X Icon */
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isScrolled || isMobileMenuOpen ? '#175d3b' : 'white'} strokeWidth="2.5" strokeLinecap="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="6" y1="18" x2="18" y2="6" />
+              </svg>
+            ) : (
+              /* Hamburger Icon */
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isScrolled ? '#175d3b' : 'white'} strokeWidth="2.5" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
         </div>
       </header>
@@ -202,94 +167,112 @@ export default function Header() {
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.6)',
-          zIndex: 998,
+          background: 'rgba(0,0,0,0.5)',
+          zIndex: 999,
           opacity: isMobileMenuOpen ? 1 : 0,
           visibility: isMobileMenuOpen ? 'visible' : 'hidden',
           transition: 'opacity 0.3s ease, visibility 0.3s ease'
         }}
       />
 
-      {/* Menu Mobile Drawer */}
+      {/* Menu Mobile Full Screen */}
       <nav
-        className="mobile-drawer"
         style={{
           position: 'fixed',
           top: 0,
+          left: 0,
           right: 0,
           bottom: 0,
           width: '100%',
-          maxWidth: '320px',
+          height: '100%',
           background: 'white',
-          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          zIndex: 1002,
+          transform: isMobileMenuOpen ? 'translateY(0)' : 'translateY(-100%)',
+          opacity: isMobileMenuOpen ? 1 : 0,
+          transition: 'transform 0.3s ease, opacity 0.3s ease',
+          zIndex: 1001,
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
-          boxShadow: isMobileMenuOpen ? '-10px 0 30px rgba(0,0,0,0.2)' : 'none'
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        <div style={{ padding: '90px 1.5rem 2rem' }}>
+        {/* Close button inside menu */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          padding: '1rem',
+          borderBottom: '1px solid #eee'
+        }}>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Fechar menu"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#175d3b" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="6" y1="18" x2="18" y2="6" />
+            </svg>
+          </button>
+        </div>
+
+        <div style={{ padding: '1rem 1.5rem 2rem', flex: 1 }}>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {menuItems.map((item, index) => (
-              <li key={item.href} style={{
-                opacity: isMobileMenuOpen ? 1 : 0,
-                transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(20px)',
-                transition: `opacity 0.3s ease ${index * 0.05}s, transform 0.3s ease ${index * 0.05}s`
-              }}>
+            {menuItems.map((item) => (
+              <li key={item.href}>
                 <Link
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   style={{
                     display: 'block',
-                    padding: '0.875rem 1rem',
-                    color: pathname === item.href ? 'var(--verde-500)' : 'var(--preto-soft)',
+                    padding: '1rem 0.5rem',
+                    color: pathname === item.href ? '#175d3b' : '#1a2420',
                     fontWeight: pathname === item.href ? 600 : 500,
-                    fontSize: '1rem',
+                    fontSize: '1.125rem',
                     textDecoration: 'none',
-                    borderRadius: '8px',
-                    background: pathname === item.href ? 'var(--cinza-50)' : 'transparent',
-                    marginBottom: '0.25rem',
-                    transition: 'background 0.2s ease'
+                    borderBottom: '1px solid #f0f0f0',
+                    transition: 'color 0.2s ease'
                   }}
                 >
                   {item.label}
                 </Link>
               </li>
             ))}
-            <li style={{
-              marginTop: '1.5rem',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid var(--cinza-100)',
-              opacity: isMobileMenuOpen ? 1 : 0,
-              transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(20px)',
-              transition: `opacity 0.3s ease ${menuItems.length * 0.05}s, transform 0.3s ease ${menuItems.length * 0.05}s`
-            }}>
-              <Link
-                href="/associe-se"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="botao botao-laranja"
-                style={{
-                  width: '100%',
-                  justifyContent: 'center',
-                  display: 'flex',
-                  padding: '1rem 1.5rem',
-                  fontSize: '1rem'
-                }}
-              >
-                Associe-se Agora
-              </Link>
-            </li>
           </ul>
 
-          {/* Info adicional no menu mobile */}
+          <div style={{ marginTop: '1.5rem' }}>
+            <Link
+              href="/associe-se"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="botao botao-laranja"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                display: 'flex',
+                padding: '1rem 1.5rem',
+                fontSize: '1rem'
+              }}
+            >
+              Associe-se Agora
+            </Link>
+          </div>
+
+          {/* Contato no menu mobile */}
           <div style={{
             marginTop: '2rem',
             paddingTop: '1.5rem',
-            borderTop: '1px solid var(--cinza-100)',
-            opacity: isMobileMenuOpen ? 1 : 0,
-            transition: 'opacity 0.3s ease 0.4s'
+            borderTop: '1px solid #eee'
           }}>
+            <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Contato
+            </p>
             <a
               href="https://wa.me/5531997178316"
               target="_blank"
@@ -298,12 +281,10 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                color: 'var(--cinza-600)',
+                padding: '0.75rem 0',
+                color: '#374840',
                 textDecoration: 'none',
-                fontSize: '0.9375rem',
-                borderRadius: '8px',
-                transition: 'background 0.2s ease'
+                fontSize: '1rem'
               }}
             >
               <span style={{ fontSize: '1.25rem' }}>📱</span>
@@ -315,12 +296,10 @@ export default function Header() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                color: 'var(--cinza-600)',
+                padding: '0.75rem 0',
+                color: '#374840',
                 textDecoration: 'none',
-                fontSize: '0.9375rem',
-                borderRadius: '8px',
-                transition: 'background 0.2s ease'
+                fontSize: '1rem'
               }}
             >
               <span style={{ fontSize: '1.25rem' }}>✉️</span>
@@ -339,19 +318,13 @@ export default function Header() {
         }
         .header-container {
           padding: 0 1rem;
-          height: 70px;
-        }
-        .header-logo {
-          max-height: 40px !important;
+          height: 60px;
         }
 
         @media (min-width: 768px) {
           .header-container {
             padding: 0 1.5rem;
-            height: 80px;
-          }
-          .header-logo {
-            max-height: 50px !important;
+            height: 70px;
           }
         }
 
@@ -365,9 +338,6 @@ export default function Header() {
           .header-container {
             padding: 0 2rem;
             height: 90px;
-          }
-          .header-logo {
-            max-height: 55px !important;
           }
         }
 
