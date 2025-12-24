@@ -329,7 +329,7 @@ export default function HomePage() {
                   boxShadow: 'var(--sombra-forte)'
                 }}>
                   <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f1896e3f2127ce231c4.jpg"
+                    src="/images/presidente.jpg"
                     alt="Dr. Carlos Henrique Quintão Valeriano - Presidente do SINMEVACO"
                     width={600}
                     height={700}
@@ -476,8 +476,8 @@ export default function HomePage() {
                   boxShadow: 'var(--sombra-forte)'
                 }}>
                   <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18ca7298052f138331.jpg"
-                    alt="Apoio Jurídico SINMEVACO"
+                    src="/images/equipe-juridica.jpg"
+                    alt="Apoio Jurídico SINMEVACO - Presidente com Equipe Jurídica"
                     width={600}
                     height={500}
                     style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
@@ -693,17 +693,6 @@ export default function HomePage() {
           </AnimarAoScroll>
         </div>
       </section>
-
-      {/* WhatsApp Flutuante */}
-      <a
-        href="https://wa.me/5531997178316"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-flutuante"
-        aria-label="WhatsApp"
-      >
-        💬
-      </a>
 
       {/* Estilos responsivos inline */}
       <style jsx>{`
