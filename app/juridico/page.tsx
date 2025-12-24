@@ -225,8 +225,6 @@ export default function JuridicoPage() {
         </div>
       </section>
 
-      <a href="https://wa.me/5531997178316" target="_blank" rel="noopener noreferrer" className="whatsapp-flutuante" aria-label="WhatsApp">💬</a>
-
       <style jsx>{`
         @media (min-width: 1024px) {
           .grade-como-funciona { grid-template-columns: 1fr 1fr !important; }

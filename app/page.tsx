@@ -146,10 +146,10 @@ export default function HomePage() {
                   boxShadow: 'var(--sombra-forte)'
                 }}>
                   <Image
-                    src="https://storage.googleapis.com/msgsndr/gEs9xx0VPhQ0xvtLESaQ/media/69405f18f4c8e921e65a0a1c.jpg"
+                    src="/images/eventos.jpg"
                     alt="Eventos SINMEVACO"
                     width={600}
-                    height={500}
+                    height={400}
                     style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
                     priority
                   />
@@ -331,9 +331,9 @@ export default function HomePage() {
                   <Image
                     src="/images/presidente.jpg"
                     alt="Dr. Carlos Henrique Quintão Valeriano - Presidente do SINMEVACO"
-                    width={600}
-                    height={700}
-                    style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+                    width={400}
+                    height={450}
+                    style={{ width: '100%', maxWidth: '400px', height: 'auto', objectFit: 'cover' }}
                   />
                 </div>
 

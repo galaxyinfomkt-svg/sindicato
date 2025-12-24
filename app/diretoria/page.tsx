@@ -78,7 +78,7 @@ export default function DiretoriaPage() {
   return (
     <main>
       {/* ========== HERO SECTION ========== */}
-      <section className="hero-verde" style={{ minHeight: '60vh', paddingTop: '140px' }}>
+      <section className="hero-verde" style={{ minHeight: '50vh', paddingTop: 'clamp(120px, 18vw, 160px)', paddingBottom: 'clamp(3rem, 8vw, 5rem)' }}>
         <div className="wrapper" style={{ position: 'relative', zIndex: 10 }}>
           <AnimarAoScroll>
             <div style={{ textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
@@ -635,17 +635,6 @@ export default function DiretoriaPage() {
           </AnimarAoScroll>
         </div>
       </section>
-
-      {/* ========== WHATSAPP FLUTUANTE ========== */}
-      <a
-        href="https://wa.me/5531997178316"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-flutuante"
-        aria-label="Fale conosco pelo WhatsApp"
-      >
-        💬
-      </a>
 
       <style jsx>{`
         @media (min-width: 1024px) {

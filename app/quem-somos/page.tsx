@@ -742,17 +742,6 @@ export default function QuemSomosPage() {
         </div>
       </section>
 
-      {/* ========== WHATSAPP FLUTUANTE ========== */}
-      <a
-        href="https://wa.me/5531997178316"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-flutuante"
-        aria-label="Fale conosco pelo WhatsApp"
-      >
-        💬
-      </a>
-
       <style jsx>{`
         @media (min-width: 1024px) {
           .grade-historia,

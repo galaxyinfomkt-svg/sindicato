@@ -247,7 +247,6 @@ export default function BeneficiosPage() {
         </div>
       </section>
 
-      <a href="https://wa.me/5531997178316" target="_blank" rel="noopener noreferrer" className="whatsapp-flutuante" aria-label="WhatsApp">💬</a>
     </main>
   )
 }
